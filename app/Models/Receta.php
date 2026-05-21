@@ -37,13 +37,4 @@ class Receta extends Model
     public function getRouteKeyName(){
         return 'slug';
     }
-
-    public function calcularCostoTotal() {
-        return $this->ingredientes->sum(function ($ingrediente) {
-            $cantidad = $ingrediente->pivot->cantidad;
-            $costo = $ingrediente->costo_unitario;
-            $merma = $ingrediente->pivot->merma_aplicada ?? 0;
-            return (($cantidad * $costo) * (1 + $merma));
-        });
-    }
 }
