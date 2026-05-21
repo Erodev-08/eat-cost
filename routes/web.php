@@ -5,8 +5,8 @@ use App\Http\Controllers\RecetaController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
-});
+    return view('home');
+})->('home');
 
 Route::view('/terminos', 'terms')->name('terms.show');
 Route::view('/privacidad', 'privacy')->name('privacy.show');
