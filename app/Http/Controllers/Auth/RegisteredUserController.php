@@ -38,23 +38,24 @@ class RegisteredUserController extends Controller
         }
 
         $request->validate([
-            'name' => ['required', 'string', 'max:255', 'regex:/^[\p{L}]+(?:[\s\'\u2019][\p{L}]+)*$/u'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'institution_name' => ['nullable', 'string', 'max:120', 'regex:/^[\p{L}\p{N} .,&()\-\'\u2019]+$/u'],
-            'faculty_name' => ['nullable', 'string', 'max:120', 'regex:/^[\p{L}\p{N} .,&()\-\'\u2019]+$/u'],
+            'name' => ['required', 'string', 'max:255', 'regex:/^[\p{L}]+(?:\s[\p{L}]+)*$/u'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users'],
+            'institution_name' => ['nullable', 'string', 'max:120', 'regex:/^[\p{L}]+(?:\s[\p{L}]+)*$/u'],
+            'faculty_name' => ['nullable', 'string', 'max:120', 'regex:/^[\p{L}]+(?:\s[\p{L}]+)*$/u'],
             'terms' => ['accepted'],
             'password' => ['required', 'confirmed', Rules\Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
         ]);
 
         $user = User::create([
-            'name' => $request->name,
+            'nombre' => $request->name,
             'email' => $request->email,
             'institution' => sprintf(
                 'Institución "%s" Facultad "%s"',
                 trim((string) $request->institution_name),
                 trim((string) $request->faculty_name)
             ),
-            'password' => Hash::make($request->password),
+            'contrasena' => Hash::make($request->password),
+            'rol' => 'estudiante',
         ]);
 
         event(new Registered($user));
