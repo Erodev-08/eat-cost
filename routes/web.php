@@ -16,9 +16,14 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::delete('/profile/image', [ProfileController::class, 'deleteProfileImage'])->name('profile.image.destroy');
+    Route::get('/profile/user', [ProfileController::class, 'user'])->name('profile.user');
+    Route::patch('/profile/cover', [ProfileController::class, 'updateCover'])->name('profile.cover.update');
+    Route::delete('/profile/cover', [ProfileController::class, 'deleteCover'])->name('profile.cover.destroy');
+    Route::get('/profile/configuracion', [ProfileController::class, 'config'])->name('profile.configuracion');
 });
 
 Route::get('/receta/create', function() {
