@@ -6,10 +6,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('home');
-})->('home');
+})->name('home');
 
 Route::view('/terminos', 'terms')->name('terms.show');
 Route::view('/privacidad', 'privacy')->name('privacy.show');
+Route::view('/contacto', 'contact')->name('contact');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -26,12 +27,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/configuracion', [ProfileController::class, 'config'])->name('profile.configuracion');
 });
 
-Route::get('/receta/create', function() {
-    return view('recetas.create');
-})->name('recetas.create');
+Route::get('/receta/create', [RecetaController::class, 'create'])->name('recetas.create');
 
+Route::get('/receta/{receta}/edit', [RecetaController::class, 'edit'])->name('recetas.edit');
 Route::get('/receta/{receta}', [RecetaController::class, 'show'])->name('recetas.show');
-Route::post('receta/store', [RecetaController::class, 'store'])->name('recetas.store');
+Route::post('/receta/store', [RecetaController::class, 'store'])->name('recetas.store');
+Route::put('/receta/{receta}', [RecetaController::class, 'update'])->name('recetas.update');
+Route::delete('/receta/{receta}', [RecetaController::class, 'destroy'])->name('recetas.destroy');
 Route::get('/receta', [RecetaController::class, 'index'])->name('recetas');
 
 require __DIR__.'/auth.php';
