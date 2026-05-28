@@ -108,8 +108,10 @@
                                 <div class="flex flex-wrap gap-2">
                                     <a href="{{ route('recetas.show', $receta) }}" class="px-3 py-2 inline-block bg-green-600 text-white rounded-xl hover:bg-green-700">Ver receta</a>
                                     <a href="{{ route('recetas.edit', $receta) }}" class="px-3 py-2 inline-block bg-blue-600 text-white rounded-xl hover:bg-blue-700">Editar</a>
+                                    <a href="{{ route('recetas.calcular', $receta) }}" class="px-3 py-2 inline-block bg-yellow-500 text-white rounded-xl hover:bg-yellow-600">Calcular receta
+                                    </a>
                                     <button
-                                        type="button"
+                                        type="button"   
                                         class="px-3 py-2 inline-block bg-red-600 text-white rounded-xl hover:bg-red-700"
                                         data-delete-action="{{ route('recetas.destroy', $receta) }}"
                                         data-delete-name="{{ $receta->nombre_receta }}"

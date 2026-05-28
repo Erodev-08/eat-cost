@@ -37,4 +37,8 @@ class Receta extends Model
     public function getRouteKeyName(){
         return 'slug';
     }
+    public function elaboradas()
+    {
+        return $this->hasMany(RecetaCalc::class, 'id_receta');
+    }
 }

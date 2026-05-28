@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecetaController;
+use App\Http\Controllers\CalculoRecetaController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -35,5 +36,15 @@ Route::post('/receta/store', [RecetaController::class, 'store'])->name('recetas.
 Route::put('/receta/{receta}', [RecetaController::class, 'update'])->name('recetas.update');
 Route::delete('/receta/{receta}', [RecetaController::class, 'destroy'])->name('recetas.destroy');
 Route::get('/receta', [RecetaController::class, 'index'])->name('recetas');
+Route::get('/recetas/{receta}/calcular', [CalculoRecetaController::class, 'create'])
+    ->name('recetas.calcular');
 
+Route::post('/recetas/{receta}/calcular', [CalculoRecetaController::class, 'store'])
+    ->name('recetas.calcular.store');
+
+Route::get('/mis-recetas-elaboradas', [CalculoRecetaController::class, 'index'])
+    ->name('recetas.elaboradas.index');
+
+Route::get('/mis-recetas-elaboradas/{recetaElaborada}', [CalculoRecetaController::class, 'show'])
+    ->name('recetas.elaboradas.show');
 require __DIR__.'/auth.php';
