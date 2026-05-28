@@ -4,6 +4,17 @@
 
 @section('content')
 
+    @if ($errors->any())
+        <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            <strong>Hay errores:</strong>
+            <ul class="mt-2 list-disc list-inside">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
 <div class="py-10">
     <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
 
@@ -28,10 +39,17 @@
 
                     {{-- IMAGEN --}}
                     <div class="md:w-1/3">
-                        <img
-                            src="{{ asset('storage/' . $receta->imagen) }}"
-                            alt="imagen receta"
-                            class="w-full h-64 object-cover rounded-xl">
+                        @if ($receta->imagen)
+                            <img
+                                src="{{ asset('storage/' . $receta->imagen) }}"
+                                alt="imagen receta"
+                                class="w-full h-64 object-cover rounded-xl">
+                        @else
+                            <div class="w-full h-64 bg-gray-200 rounded-xl flex items-center justify-center text-gray-500">
+                                Sin imagen
+                            </div>
+                        @endif
+                    </div>
                     </div>
 
                     {{-- INFO --}}
@@ -97,11 +115,8 @@
             {{-- FORMULARIO --}}
             <div class="p-6">
 
-                <form
-                    action="{{ route('recetas.calcular.store', $receta) }}"
-                    method="POST">
-
-                    @csrf
+                <form action="{{ route('recetas.calcular.store', $receta->slug) }}" method="POST">
+                @csrf
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 

@@ -31,7 +31,7 @@ class Receta extends Model
             'receta_ingrediente',
             'id_receta',
             'id_ingrediente'
-        )->withPivot('cantidad', 'merma_aplicada');
+        )->withPivot('cantidad', 'unidad_medida', 'merma_aplicada');
     }
 
     public function getRouteKeyName(){

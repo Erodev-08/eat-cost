@@ -11,6 +11,7 @@ class CalculoRecetaController extends Controller
 {
     public function store(Request $request, Receta $receta)
     {
+        
         $request->validate([
             'mano_obra' => 'required|numeric|min:0',
             'costos_indirectos' => 'required|numeric|min:0',
@@ -20,7 +21,7 @@ class CalculoRecetaController extends Controller
         ]);
 
         return DB::transaction(function () use ($request, $receta) {
-
+            
             $receta->load('ingredientes');
 
             $costoNeto = 0;
@@ -28,6 +29,24 @@ class CalculoRecetaController extends Controller
 
             foreach ($receta->ingredientes as $ingrediente) {
                 $cantidadUsada = $ingrediente->pivot->cantidad;
+
+                if (!$cantidadUsada || $cantidadUsada <= 0) {
+                    return back()->withErrors([
+                        'ingredientes' => "El ingrediente {$ingrediente->nombre_ingrediente} no tiene cantidad usada válida."
+                    ]);
+                }
+
+                if (!$ingrediente->presentacion_cantidad || $ingrediente->presentacion_cantidad <= 0) {
+                    return back()->withErrors([
+                        'ingredientes' => "El ingrediente {$ingrediente->nombre_ingrediente} no tiene presentación válida."
+                    ]);
+                }
+
+                if (!$ingrediente->costo_presentacion || $ingrediente->costo_presentacion <= 0) {
+                    return back()->withErrors([
+                        'ingredientes' => "El ingrediente {$ingrediente->nombre_ingrediente} no tiene costo de presentación válido."
+                    ]);
+                }
 
                 $rendimiento = 1;
                 $costoReal = $ingrediente->costo_presentacion / $rendimiento;
@@ -70,7 +89,7 @@ class CalculoRecetaController extends Controller
             $interpretacion = $diferenciaObjetivo > 0
                 ? 'El costo real supera el costo objetivo. Se recomienda reducir mermas, buscar mejores precios de ingredientes u optimizar mano de obra.'
                 : 'La receta cumple con la utilidad deseada. El costo está dentro del objetivo.';
-
+            
             $recetaElaborada = RecetaCalc::create([
                 'id_receta' => $receta->id_receta,
                 'id_usuario' => auth()->id(),
@@ -96,7 +115,7 @@ class CalculoRecetaController extends Controller
             }
 
             return redirect()
-                ->route('recetas.elaboradas.show', $recetaElaborada)
+                ->route('recetas.elaboradas.show', $recetaElaborada->id_receta_elaborada)
                 ->with('status', 'Cálculo generado correctamente');
         });
     }
@@ -114,6 +133,12 @@ class CalculoRecetaController extends Controller
     public function create(Receta $receta)
     {
         $receta->load('ingredientes');
+
+        if ($receta->ingredientes->isEmpty()) {
+            return back()->withErrors([
+                'ingredientes' => 'La receta no tiene ingredientes registrados.'
+            ]);
+        }
 
         return view('recetas.calcular', compact('receta'));
     }

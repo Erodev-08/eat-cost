@@ -16,32 +16,38 @@ class RecetaController extends Controller
 
     public function store(Request $request) {
         $validated = $request->validate([
-            'nombre_receta' => ['required', 'string', 'min:3', 'max:150'],
-            'descripcion' => ['nullable', 'string'],
-            'procedimiento' => ['nullable', 'string'],
-            'imagen' => ['nullable', 'image', 'max:2048'],
-            'ingredientes' => ['nullable', 'array'],
-            'ingredientes.*.nombre' => ['nullable', 'string', 'max:100'],
-        ]);
+        'nombre_receta' => ['required', 'string', 'min:3', 'max:150'],
+        'descripcion' => ['nullable', 'string'],
+        'procedimiento' => ['nullable', 'string'],
+        'imagen' => ['nullable', 'image', 'max:2048'],
+        'ingredientes' => ['required', 'array'],
+        'ingredientes.*.nombre' => ['required', 'string', 'max:100'],
+        'ingredientes.*.cantidad' => ['required', 'numeric', 'min:0.01'],
+        'ingredientes.*.unidad_medida' => ['required', 'string', 'max:20'],
+        'ingredientes.*.presentacion_cantidad' => ['required', 'numeric', 'min:0.01'],
+        'ingredientes.*.presentacion_unidad' => ['required', 'string', 'max:20'],
+        'ingredientes.*.costo_presentacion' => ['required', 'numeric', 'min:0.01'],
+
+    ]);
 
         $rutaImagen = null;
         if ($request->hasFile('imagen')) {
             $rutaImagen = $request->file('imagen')->store('recetas', 'public');
         }
-
+        
         $receta = Receta::create([
-            'nombre_receta' => $validated['nombre_receta'],
-            'slug' => $this->makeUniqueSlug($validated['nombre_receta']),
-            'porciones' => null,
-            'id_usuario' => auth()->id(),
-            'fecha_creacion' => now()->toDateString(),
-            'descripcion' => $validated['descripcion'] ?? null,
-            'procedimiento' => $validated['procedimiento'] ?? null,
-            'imagen' => $rutaImagen,
-        ]);
+        'nombre_receta' => $request->input('nombre_receta'),
+        'slug' => $this->makeUniqueSlug($request->input('nombre_receta')),
+        'porciones' => null,
+        'id_usuario' => auth()->id(),
+        'fecha_creacion' => now()->toDateString(),
+        'descripcion' => $request->input('descripcion'),
+        'procedimiento' => $request->input('procedimiento'),
+        'imagen' => $rutaImagen,
+    ]);
 
         if ($request->has('ingredientes')) {
-            $this->syncIngredientes($receta, $request->ingredientes);
+            $this->syncIngredientes($receta, $request->input('ingredientes', []));
         }
 
         return redirect()->route('recetas')->with('status', 'success-receta');
@@ -64,13 +70,19 @@ class RecetaController extends Controller
 
     public function update(Request $request, Receta $receta) {
         $validated = $request->validate([
-            'nombre_receta' => ['required', 'string', 'min:3', 'max:150'],
-            'descripcion' => ['nullable', 'string'],
-            'procedimiento' => ['nullable', 'string'],
-            'imagen' => ['nullable', 'image', 'max:2048'],
-            'ingredientes' => ['nullable', 'array'],
-            'ingredientes.*.nombre' => ['nullable', 'string', 'max:100'],
-        ]);
+        'nombre_receta' => ['required', 'string', 'min:3', 'max:150'],
+        'descripcion' => ['nullable', 'string'],
+        'procedimiento' => ['nullable', 'string'],
+        'imagen' => ['nullable', 'image', 'max:2048'],
+
+        'ingredientes' => ['required', 'array'],
+        'ingredientes.*.nombre' => ['required', 'string', 'max:100'],
+        'ingredientes.*.cantidad' => ['required', 'numeric', 'min:0.01'],
+        'ingredientes.*.unidad_medida' => ['required', 'string', 'max:20'],
+        'ingredientes.*.presentacion_cantidad' => ['required', 'numeric', 'min:0.01'],
+        'ingredientes.*.presentacion_unidad' => ['required', 'string', 'max:20'],
+        'ingredientes.*.costo_presentacion' => ['required', 'numeric', 'min:0.01'],
+    ]);
 
         $rutaImagen = $receta->imagen;
         if ($request->hasFile('imagen')) {
@@ -129,19 +141,34 @@ class RecetaController extends Controller
         return $query->exists();
     }
 
-    private function syncIngredientes(Receta $receta, array $ingredientes): void
+   private function syncIngredientes(Receta $receta, array $ingredientes): void
     {
+        $syncData = [];
+
         foreach ($ingredientes as $ing) {
             $nombre = trim($ing['nombre'] ?? '');
+
             if ($nombre === '') {
                 continue;
             }
 
-            $ingrediente = Ingrediente::firstOrCreate([
-                'nombre' => $nombre,
-            ]);
+            $ingrediente = Ingrediente::updateOrCreate(
+                ['nombre' => $nombre],
+                [
+                    'unidad_medida' => $ing['unidad_medida'] ?? null,
+                    'presentacion_cantidad' => $ing['presentacion_cantidad'] ?? null,
+                    'presentacion_unidad' => $ing['presentacion_unidad'] ?? null,
+                    'costo_presentacion' => $ing['costo_presentacion'] ?? null,
+                ]
+            );
 
-            $receta->ingredientes()->syncWithoutDetaching($ingrediente->id_ingrediente);
+            $syncData[$ingrediente->id_ingrediente] = [
+                'cantidad' => $ing['cantidad'] ?? 0,
+                'unidad_medida' => $ing['unidad_medida'] ?? null,
+                'merma_aplicada' => $ing['merma_aplicada'] ?? 0,
+            ];
         }
+
+        $receta->ingredientes()->sync($syncData);
     }
 }

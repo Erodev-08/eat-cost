@@ -132,7 +132,7 @@
                                 <div id="listaIngredientes" class="grid grid-cols-2 gap-2"></div>
                                 <button type="button" onclick="generalIngredientes()"
                                     class="mt-2 bg-gray-200 px-4 py-2 rounded-lg">
-                                    General ingrediente
+                                    Generar ingrediente
                                 </button>
                             </div>
 
@@ -189,23 +189,78 @@
 
             for (let i = 0; i < cantidad; i++) {
                 contenedor.insertAdjacentHTML('beforeend', `
-                   <div class="border rounded-lg p-3 shadow-sm mb-2">
+                <div class="border rounded-lg p-3 shadow-sm mb-2">
 
                         <p class="text-sm font-semibold mb-2 text-gray-700">
                             Ingrediente ${i + 1}
                         </p>
 
-                        <div class="grid grid-cols-2 gap-2">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                             
-                            <input type="text" name="ingredientes[${i}][nombre]" placeholder="Nombre"
-                                class="border border-gray-400 p-2 rounded-lg text-sm">
+                            <input 
+                                type="text" 
+                                name="ingredientes[${i}][nombre]" 
+                                placeholder="Nombre"
+                                class="border border-gray-400 p-2 rounded-lg text-sm"
+                                required>
+
+                            <input 
+                                type="number" 
+                                step="0.01"
+                                min="0"
+                                name="ingredientes[${i}][cantidad]" 
+                                placeholder="Cantidad usada en receta"
+                                class="border border-gray-400 p-2 rounded-lg text-sm"
+                                required>
+
+                            <select 
+                                name="ingredientes[${i}][unidad_medida]"
+                                class="border border-gray-400 p-2 rounded-lg text-sm"
+                                required>
+                                <option value="">Unidad usada</option>
+                                <option value="gr">gr</option>
+                                <option value="kg">kg</option>
+                                <option value="ml">ml</option>
+                                <option value="l">l</option>
+                                <option value="pza">pza</option>
+                            </select>
+
+                            <input 
+                                type="number" 
+                                step="0.01"
+                                min="0"
+                                name="ingredientes[${i}][presentacion_cantidad]" 
+                                placeholder="Presentación cantidad. Ej: 5000"
+                                class="border border-gray-400 p-2 rounded-lg text-sm"
+                                required>
+
+                            <select 
+                                name="ingredientes[${i}][presentacion_unidad]"
+                                class="border border-gray-400 p-2 rounded-lg text-sm"
+                                required>
+                                <option value="">Unidad presentación</option>
+                                <option value="gr">gr</option>
+                                <option value="kg">kg</option>
+                                <option value="ml">ml</option>
+                                <option value="l">l</option>
+                                <option value="pza">pza</option>
+                            </select>
+
+                            <input 
+                                type="number" 
+                                step="0.01"
+                                min="0"
+                                name="ingredientes[${i}][costo_presentacion]" 
+                                placeholder="Costo presentación. Ej: 26"
+                                class="border border-gray-400 p-2 rounded-lg text-sm"
+                                required>
 
                         </div>
 
                     </div>
                 `);
-            }
-        }
+    }
+}
 
     </script>
 
