@@ -209,30 +209,12 @@
                                         </p>
                                     @endif
                                 </div>
-                            </div>
-
-                            {{-- AGREGAR INGREDIENTES NUEVOS --}}
-                            <div class="mb-5 border-t pt-4">
-                                <h3 class="font-bold mb-2 text-gray-800">
-                                    Agregar ingredientes
-                                </h3>
-
-                                <label class="block text-sm font-semibold mb-1">
-                                    ¿Cuántos ingredientes nuevos?
-                                </label>
-
-                                <input
-                                    type="number"
-                                    id="cantidadIngredientes"
-                                    min="1"
-                                    class="w-full mb-3 border border-gray-400 rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                    placeholder="Ej: 3">
 
                                 <button
                                     type="button"
-                                    onclick="generalIngredientes()"
-                                    class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg text-sm">
-                                    Generar ingrediente
+                                    onclick="agregarIngrediente()"
+                                    class="mt-4 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg text-sm">
+                                    Añadir ingrediente
                                 </button>
                             </div>
 
@@ -278,93 +260,95 @@
         }
     }
 
-    let contador = document.querySelectorAll('#listaIngredientes > div').length;
+    let contadorIngredientes = document.querySelectorAll('#listaIngredientes > div.border').length;
 
-    function generalIngredientes() {
-        const contenedor = document.getElementById('listaIngredientes');
-        const cantidadInput = document.getElementById('cantidadIngredientes');
-        const cantidad = parseInt(cantidadInput.value);
+    function escapeHtml(valor) {
+        return String(valor ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
+    }
 
-        if (!cantidad || cantidad <= 0) {
-            alert('Ingresa una cantidad válida');
-            return;
-        }
+    function plantillaIngrediente(indice, ingrediente = {}) {
+        return `
+            <div class="border rounded-lg p-3 shadow-sm mb-2 bg-gray-50">
+                <p class="text-sm font-semibold mb-2 text-gray-700">
+                    Ingrediente nuevo ${indice + 1}
+                </p>
 
-        for (let i = 0; i < cantidad; i++) {
-            const index = contador++;
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <input
+                        type="text"
+                        name="ingredientes[${indice}][nombre]"
+                        value="${escapeHtml(ingrediente.nombre)}"
+                        placeholder="Nombre"
+                        class="border border-gray-400 p-2 rounded-lg text-sm"
+                        required>
 
-            const html = `
-                <div class="border rounded-lg p-3 shadow-sm mb-2 bg-gray-50">
-                    <p class="text-sm font-semibold mb-2 text-gray-700">
-                        Ingrediente nuevo ${index + 1}
-                    </p>
+                    <input
+                        type="number"
+                        step="0.01"
+                        min="0.01"
+                        name="ingredientes[${indice}][cantidad]"
+                        value="${escapeHtml(ingrediente.cantidad)}"
+                        placeholder="Cantidad usada"
+                        class="border border-gray-400 p-2 rounded-lg text-sm"
+                        required>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        <input
-                            type="text"
-                            name="ingredientes[${index}][nombre]"
-                            placeholder="Nombre"
-                            class="border border-gray-400 p-2 rounded-lg text-sm"
-                            required>
+                    <select
+                        name="ingredientes[${indice}][unidad_medida]"
+                        class="border border-gray-400 p-2 rounded-lg text-sm"
+                        required>
+                        <option value="" ${!ingrediente.unidad_medida ? 'selected' : ''}>Unidad usada</option>
+                        <option value="gr" ${ingrediente.unidad_medida === 'gr' ? 'selected' : ''}>gr</option>
+                        <option value="kg" ${ingrediente.unidad_medida === 'kg' ? 'selected' : ''}>kg</option>
+                        <option value="ml" ${ingrediente.unidad_medida === 'ml' ? 'selected' : ''}>ml</option>
+                        <option value="l" ${ingrediente.unidad_medida === 'l' ? 'selected' : ''}>l</option>
+                        <option value="pza" ${ingrediente.unidad_medida === 'pza' ? 'selected' : ''}>pza</option>
+                    </select>
 
-                        <input
-                            type="number"
-                            step="0.01"
-                            min="0.01"
-                            name="ingredientes[${index}][cantidad]"
-                            placeholder="Cantidad usada"
-                            class="border border-gray-400 p-2 rounded-lg text-sm"
-                            required>
+                    <input
+                        type="number"
+                        step="0.01"
+                        min="0.01"
+                        name="ingredientes[${indice}][presentacion_cantidad]"
+                        value="${escapeHtml(ingrediente.presentacion_cantidad)}"
+                        placeholder="Presentación cantidad"
+                        class="border border-gray-400 p-2 rounded-lg text-sm"
+                        required>
 
-                        <select
-                            name="ingredientes[${index}][unidad_medida]"
-                            class="border border-gray-400 p-2 rounded-lg text-sm"
-                            required>
-                            <option value="">Unidad usada</option>
-                            <option value="gr">gr</option>
-                            <option value="kg">kg</option>
-                            <option value="ml">ml</option>
-                            <option value="l">l</option>
-                            <option value="pza">pza</option>
-                        </select>
+                    <select
+                        name="ingredientes[${indice}][presentacion_unidad]"
+                        class="border border-gray-400 p-2 rounded-lg text-sm"
+                        required>
+                        <option value="" ${!ingrediente.presentacion_unidad ? 'selected' : ''}>Unidad presentación</option>
+                        <option value="gr" ${ingrediente.presentacion_unidad === 'gr' ? 'selected' : ''}>gr</option>
+                        <option value="kg" ${ingrediente.presentacion_unidad === 'kg' ? 'selected' : ''}>kg</option>
+                        <option value="ml" ${ingrediente.presentacion_unidad === 'ml' ? 'selected' : ''}>ml</option>
+                        <option value="l" ${ingrediente.presentacion_unidad === 'l' ? 'selected' : ''}>l</option>
+                        <option value="pza" ${ingrediente.presentacion_unidad === 'pza' ? 'selected' : ''}>pza</option>
+                    </select>
 
-                        <input
-                            type="number"
-                            step="0.01"
-                            min="0.01"
-                            name="ingredientes[${index}][presentacion_cantidad]"
-                            placeholder="Presentación cantidad"
-                            class="border border-gray-400 p-2 rounded-lg text-sm"
-                            required>
-
-                        <select
-                            name="ingredientes[${index}][presentacion_unidad]"
-                            class="border border-gray-400 p-2 rounded-lg text-sm"
-                            required>
-                            <option value="">Unidad presentación</option>
-                            <option value="gr">gr</option>
-                            <option value="kg">kg</option>
-                            <option value="ml">ml</option>
-                            <option value="l">l</option>
-                            <option value="pza">pza</option>
-                        </select>
-
-                        <input
-                            type="number"
-                            step="0.01"
-                            min="0.01"
-                            name="ingredientes[${index}][costo_presentacion]"
-                            placeholder="Costo presentación"
-                            class="border border-gray-400 p-2 rounded-lg text-sm"
-                            required>
-                    </div>
+                    <input
+                        type="number"
+                        step="0.01"
+                        min="0.01"
+                        name="ingredientes[${indice}][costo_presentacion]"
+                        value="${escapeHtml(ingrediente.costo_presentacion)}"
+                        placeholder="Costo presentación"
+                        class="border border-gray-400 p-2 rounded-lg text-sm"
+                        required>
                 </div>
-            `;
+            </div>
+        `;
+    }
 
-            contenedor.insertAdjacentHTML('beforeend', html);
-        }
-
-        cantidadInput.value = '';
+    function agregarIngrediente(ingrediente = {}) {
+        const contenedor = document.getElementById('listaIngredientes');
+        contenedor.insertAdjacentHTML('beforeend', plantillaIngrediente(contadorIngredientes, ingrediente));
+        contadorIngredientes += 1;
     }
 </script>
 @endsection
