@@ -33,5 +33,48 @@
     
     {{-- Scripts adicionales por sección --}}
     @stack('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @if (session('status'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                let status = "{{ session('status') }}";
+
+                let title = 'Operación realizada';
+                let text = 'La acción se completó correctamente.';
+                let icon = 'success';
+
+                if (status === 'success-receta') {
+                    title = 'Receta creada';
+                    text = 'La receta se guardó correctamente.';
+                }
+
+                if (status === 'success-receta-update') {
+                    title = 'Receta actualizada';
+                    text = 'Los cambios se guardaron correctamente.';
+                }
+
+                if (status === 'success-receta-delete') {
+                    title = 'Receta eliminada';
+                    text = 'La receta se eliminó correctamente.';
+                }
+
+                if (status === 'success-calculo') {
+                    title = 'Cálculo generado';
+                    text = 'El cálculo de la receta se realizó correctamente.';
+                }
+
+                Swal.fire({
+                    icon: icon,
+                    title: title,
+                    text: text,
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#2563eb',
+                    timer: 2500,
+                    timerProgressBar: true
+                });
+            });
+        </script>
+    @endif
 </body>
 </html>

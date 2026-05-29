@@ -73,7 +73,7 @@ class RecetaController extends Controller
         'nombre_receta' => ['required', 'string', 'min:3', 'max:150'],
         'descripcion' => ['nullable', 'string'],
         'procedimiento' => ['nullable', 'string'],
-        'imagen' => ['nullable', 'image', 'max:2048'],
+        'imagen' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
 
         'ingredientes' => ['required', 'array'],
         'ingredientes.*.nombre' => ['required', 'string', 'max:100'],
@@ -85,10 +85,12 @@ class RecetaController extends Controller
     ]);
 
         $rutaImagen = $receta->imagen;
+
         if ($request->hasFile('imagen')) {
             if ($receta->imagen) {
                 Storage::disk('public')->delete($receta->imagen);
             }
+
             $rutaImagen = $request->file('imagen')->store('recetas', 'public');
         }
 
@@ -100,9 +102,7 @@ class RecetaController extends Controller
             'imagen' => $rutaImagen,
         ]);
 
-        if ($request->has('ingredientes')) {
-            $this->syncIngredientes($receta, $request->ingredientes);
-        }
+        $this->syncIngredientes($receta, $request->input('ingredientes', []));
 
         return redirect()->route('recetas.show', $receta)->with('status', 'success-receta-update');
     }

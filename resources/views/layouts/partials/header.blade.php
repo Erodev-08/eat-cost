@@ -11,6 +11,11 @@
             'name'      => __('Recetas') 
         ],
         [
+        'route'     => route('recetas.elaboradas.index'),
+        'active'    => request()->routeIs('recetas.elaboradas.*'),
+        'name'      => __('Mis recetas')
+        ],
+        [
             'route'     => route('contact'),
             'active'    => request()->routeIs('contact'),
             'name'      => __('Contacto')
@@ -31,7 +36,7 @@
                 </svg>
 			</div>
             <div>
-				<div class="text-2xl font-bold tracking-tight">CulinFinance</div>
+				<div class="text-2xl font-bold tracking-tight">Eat Cost</div>
 			</div>
         </a>
         

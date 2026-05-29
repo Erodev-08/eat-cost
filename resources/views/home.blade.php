@@ -87,7 +87,7 @@
 
         {{-- Hero Section --}}
         <div class="mb-12 text-center">
-            <h1 class="text-4xl font-bold text-blue-900 mb-4">Bienvenido a CulinFinance</h1>
+            <h1 class="text-4xl font-bold text-blue-900 mb-4">Bienvenido a Eat Cost</h1>
             <p class="text-xl text-gray-600">Tu plataforma de gestión financiera</p>
         </div>
         

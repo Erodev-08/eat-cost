@@ -64,45 +64,72 @@
                         </p>
 
                         <div>
-                            <h3 class="font-semibold text-lg mb-2">
-                                Ingredientes
+                            <h3 class="font-semibold text-lg mb-4">
+                                Ingredientes para cálculo
                             </h3>
 
                             <div class="overflow-x-auto">
                                 <table class="min-w-full border border-gray-200 rounded-lg">
-
                                     <thead class="bg-gray-100">
                                         <tr>
                                             <th class="px-4 py-2 text-left">Ingrediente</th>
-                                            <th class="px-4 py-2 text-left">Cantidad</th>
-                                            <th class="px-4 py-2 text-left">Unidad</th>
+                                            <th class="px-4 py-2 text-left">Cantidad usada</th>
+                                            <th class="px-4 py-2 text-left">Presentación</th>
+                                            <th class="px-4 py-2 text-left">Costo presentación</th>
+                                            <th class="px-4 py-2 text-left">Merma %</th>
+                                            <th class="px-4 py-2 text-left">Peso útil</th>
                                         </tr>
                                     </thead>
 
                                     <tbody>
                                         @foreach ($receta->ingredientes as $ingrediente)
-
                                             <tr class="border-t">
-
                                                 <td class="px-4 py-2">
-                                                    {{ $ingrediente->nombre_ingrediente }}
+                                                    {{ $ingrediente->nombre }}
                                                 </td>
 
                                                 <td class="px-4 py-2">
                                                     {{ $ingrediente->pivot->cantidad }}
-                                                </td>
-
-                                                <td class="px-4 py-2">
                                                     {{ $ingrediente->pivot->unidad_medida }}
                                                 </td>
 
-                                            </tr>
+                                                <td class="px-4 py-2">
+                                                    {{ $ingrediente->presentacion_cantidad }}
+                                                    {{ $ingrediente->presentacion_unidad }}
+                                                </td>
 
+                                                <td class="px-4 py-2">
+                                                    ${{ number_format($ingrediente->costo_presentacion, 2) }}
+                                                </td>
+
+                                                <td class="px-4 py-2">
+                                                    <input
+                                                        type="number"
+                                                        step="0.01"
+                                                        min="0"
+                                                        max="99"
+                                                        name="ingredientes[{{ $ingrediente->id_ingrediente }}][merma_porcentaje]"
+                                                        value="0"
+                                                        class="w-24 border border-gray-300 rounded-lg px-3 py-2">
+                                                </td>
+
+                                                <td class="px-4 py-2">
+                                                    <input
+                                                        type="number"
+                                                        step="0.01"
+                                                        min="0"
+                                                        name="ingredientes[{{ $ingrediente->id_ingrediente }}][peso_util]"
+                                                        placeholder="Opcional"
+                                                        class="w-28 border border-gray-300 rounded-lg px-3 py-2">
+                                                </td>
+                                            </tr>
                                         @endforeach
                                     </tbody>
-
                                 </table>
                             </div>
+                            <p class="text-sm text-gray-500 mt-3">
+                                Puedes ingresar la merma (%) o el peso útil. Si ingresas peso útil, el sistema calculará automáticamente el rendimiento.
+                            </p>
 
                         </div>
 

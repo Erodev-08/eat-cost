@@ -47,4 +47,7 @@ Route::get('/mis-recetas-elaboradas', [CalculoRecetaController::class, 'index'])
 
 Route::get('/mis-recetas-elaboradas/{recetaElaborada}', [CalculoRecetaController::class, 'show'])
     ->name('recetas.elaboradas.show');
+
+Route::get('/mis-recetas-elaboradas', [CalculoRecetaController::class, 'index'])
+    ->name('recetas.elaboradas.index');
 require __DIR__.'/auth.php';

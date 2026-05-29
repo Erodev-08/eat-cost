@@ -13,11 +13,15 @@ class CalculoRecetaController extends Controller
     {
         
         $request->validate([
-            'mano_obra' => 'required|numeric|min:0',
-            'costos_indirectos' => 'required|numeric|min:0',
-            'gastos_operacion' => 'required|numeric|min:0',
-            'precio_venta' => 'required|numeric|min:0',
-            'utilidad_deseada' => 'required|numeric|min:0|max:100',
+        'mano_obra' => 'required|numeric|min:0',
+        'costos_indirectos' => 'required|numeric|min:0',
+        'gastos_operacion' => 'required|numeric|min:0',
+        'precio_venta' => 'required|numeric|min:0.01',
+        'utilidad_deseada' => 'required|numeric|min:0|max:100',
+
+        'ingredientes' => 'nullable|array',
+        'ingredientes.*.merma_porcentaje' => 'nullable|numeric|min:0|max:99',
+        'ingredientes.*.peso_util' => 'nullable|numeric|min:0',
         ]);
 
         return DB::transaction(function () use ($request, $receta) {
@@ -28,46 +32,83 @@ class CalculoRecetaController extends Controller
             $detalles = [];
 
             foreach ($receta->ingredientes as $ingrediente) {
-                $cantidadUsada = $ingrediente->pivot->cantidad;
+            $cantidadUsada = (float) $ingrediente->pivot->cantidad;
+            $pesoBruto = (float) $ingrediente->presentacion_cantidad;
+            $costoPresentacion = (float) $ingrediente->costo_presentacion;
 
-                if (!$cantidadUsada || $cantidadUsada <= 0) {
-                    return back()->withErrors([
-                        'ingredientes' => "El ingrediente {$ingrediente->nombre_ingrediente} no tiene cantidad usada válida."
-                    ]);
-                }
-
-                if (!$ingrediente->presentacion_cantidad || $ingrediente->presentacion_cantidad <= 0) {
-                    return back()->withErrors([
-                        'ingredientes' => "El ingrediente {$ingrediente->nombre_ingrediente} no tiene presentación válida."
-                    ]);
-                }
-
-                if (!$ingrediente->costo_presentacion || $ingrediente->costo_presentacion <= 0) {
-                    return back()->withErrors([
-                        'ingredientes' => "El ingrediente {$ingrediente->nombre_ingrediente} no tiene costo de presentación válido."
-                    ]);
-                }
-
-                $rendimiento = 1;
-                $costoReal = $ingrediente->costo_presentacion / $rendimiento;
-                $costoUnitarioBase = $costoReal / $ingrediente->presentacion_cantidad;
-                $costoReceta = $cantidadUsada * $costoUnitarioBase;
-
-                $costoNeto += $costoReceta;
-
-                $detalles[] = [
-                    'id_ingrediente' => $ingrediente->id_ingrediente,
-                    'cantidad_usada' => $cantidadUsada,
-                    'unidad_usada' => $ingrediente->pivot->unidad_medida,
-                    'peso_bruto' => $ingrediente->presentacion_cantidad,
-                    'peso_util' => $ingrediente->presentacion_cantidad,
-                    'merma_porcentaje' => 0,
-                    'rendimiento' => $rendimiento,
-                    'costo_real' => $costoReal,
-                    'costo_unitario_base' => $costoUnitarioBase,
-                    'costo_receta' => $costoReceta,
-                ];
+            if ($cantidadUsada <= 0) {
+                return back()->withErrors([
+                    'ingredientes' => "El ingrediente {$ingrediente->nombre} no tiene cantidad usada válida."
+                ])->withInput();
             }
+
+            if ($pesoBruto <= 0) {
+                return back()->withErrors([
+                    'ingredientes' => "El ingrediente {$ingrediente->nombre} no tiene presentación válida."
+                ])->withInput();
+            }
+
+            if ($costoPresentacion <= 0) {
+                return back()->withErrors([
+                    'ingredientes' => "El ingrediente {$ingrediente->nombre} no tiene costo de presentación válido."
+                ])->withInput();
+            }
+
+            $datosIngrediente = $request->input("ingredientes.{$ingrediente->id_ingrediente}", []);
+
+            $mermaPorcentaje = isset($datosIngrediente['merma_porcentaje'])
+                ? (float) $datosIngrediente['merma_porcentaje']
+                : 0;
+
+            $pesoUtil = isset($datosIngrediente['peso_util']) && $datosIngrediente['peso_util'] !== ''
+                ? (float) $datosIngrediente['peso_util']
+                : null;
+
+            if ($pesoUtil !== null && $pesoUtil > 0) {
+                if ($pesoUtil > $pesoBruto) {
+                    return back()->withErrors([
+                        'ingredientes' => "El peso útil de {$ingrediente->nombre} no puede ser mayor que la presentación."
+                    ])->withInput();
+                }
+
+                $rendimiento = $pesoUtil / $pesoBruto;
+                $mermaPorcentaje = (1 - $rendimiento) * 100;
+            } else {
+                if ($mermaPorcentaje < 0 || $mermaPorcentaje >= 100) {
+                    return back()->withErrors([
+                        'ingredientes' => "La merma de {$ingrediente->nombre} debe estar entre 0 y 99%."
+                    ])->withInput();
+                }
+
+                $rendimiento = 1 - ($mermaPorcentaje / 100);
+                $pesoUtil = $pesoBruto * $rendimiento;
+            }
+
+            if ($rendimiento <= 0) {
+                return back()->withErrors([
+                    'ingredientes' => "El rendimiento de {$ingrediente->nombre} no puede ser 0."
+                ])->withInput();
+            }
+
+            $costoReal = $costoPresentacion / $rendimiento;
+            $costoUnitarioBase = $costoReal / $pesoBruto;
+            $costoReceta = $cantidadUsada * $costoUnitarioBase;
+
+            $costoNeto += $costoReceta;
+
+            $detalles[] = [
+                'id_ingrediente' => $ingrediente->id_ingrediente,
+                'cantidad_usada' => $cantidadUsada,
+                'unidad_usada' => $ingrediente->pivot->unidad_medida,
+                'peso_bruto' => $pesoBruto,
+                'peso_util' => $pesoUtil,
+                'merma_porcentaje' => $mermaPorcentaje,
+                'rendimiento' => $rendimiento,
+                'costo_real' => $costoReal,
+                'costo_unitario_base' => $costoUnitarioBase,
+                'costo_receta' => $costoReceta,
+            ];
+        }
 
             $manoObra = $request->mano_obra;
             $costosIndirectos = $request->costos_indirectos;
@@ -115,8 +156,8 @@ class CalculoRecetaController extends Controller
             }
 
             return redirect()
-                ->route('recetas.elaboradas.show', $recetaElaborada->id_receta_elaborada)
-                ->with('status', 'Cálculo generado correctamente');
+            ->route('recetas.elaboradas.show', $recetaElaborada->id_receta_elaborada)
+            ->with('status', 'success-calculo');
         });
     }
 
@@ -141,5 +182,14 @@ class CalculoRecetaController extends Controller
         }
 
         return view('recetas.calcular', compact('receta'));
+    }
+
+    public function index()
+    {
+        $recetasElaboradas = RecetaCalc::with('receta')
+            ->latest('id_receta_elaborada')
+            ->paginate(6);
+
+        return view('recetas_elaboradas.index', compact('recetasElaboradas'));
     }
 }

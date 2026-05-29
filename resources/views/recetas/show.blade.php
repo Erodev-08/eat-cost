@@ -3,20 +3,6 @@
 @section('title', 'Show Recetas')
 
 @section('content')
-    @if (Session::has('status'))
-        <div class="max-w-6xl mx-auto px-5 mb-6">
-            <div class="bg-green-50 border border-green-200 text-green-800 rounded-lg px-4 py-3">
-                @php
-                    $status = Session::get('status');
-                    $message = match($status) {
-                        'success-receta-update' => 'Receta actualizada correctamente',
-                        default => $status
-                    };
-                @endphp
-                {{ $message }}
-            </div>
-        </div>
-    @endif
 
     <div class="py-10">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">

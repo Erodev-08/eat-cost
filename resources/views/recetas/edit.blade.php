@@ -107,103 +107,264 @@
                         </div>
                     </div>
 
-                    <div class="w-full md:w-1/2 justify-center items-center">
-                        <div class="max-w-xl p-5 justify-center items-center">
-                            <div class="mb-5 mx-auto">
-                                <h2 class="text-2xl font-bold text-gray-900">
-                                    Actualizar receta
-                                </h2>
-                            </div>
+                    <div class="w-full md:w-1/2">
+                        <div class="max-w-xl p-5 mx-auto flex flex-col" style="height: 650px; overflow: hidden;">
+
+                        <div class="mb-5 shrink-0">
+                            <h2 class="text-2xl font-bold text-gray-900">
+                                Actualizar receta
+                            </h2>
+                            <p class="text-sm text-gray-500 mt-1">
+                                Edita los ingredientes actuales o agrega nuevos ingredientes a la receta.
+                            </p>
+                        </div>
+
+                        
+                        {{-- ÁREA SCROLLEABLE --}}
+                        <div class="pr-2" style="height: 500px; overflow-y: auto;">
 
                             <div class="mb-6">
-                                <h3 class="font-bold mb-2">Ingredientes actuales</h3>
-                                @if ($receta->ingredientes->count())
-                                    <ul class="list-disc list-inside text-sm text-gray-700 space-y-1">
-                                        @foreach ($receta->ingredientes as $ingrediente)
-                                            <li>{{ $ingrediente->nombre }}</li>
+                                <h3 class="font-bold mb-3 text-gray-800">
+                                    Ingredientes de la receta
+                                </h3>
+
+                                <div id="listaIngredientes" class="space-y-3">
+                                    @if ($receta->ingredientes->count())
+                                        @foreach ($receta->ingredientes as $i => $ingrediente)
+                                            <div class="border rounded-lg p-3 shadow-sm bg-gray-50">
+                                                <p class="text-sm font-semibold mb-2 text-gray-700">
+                                                    Ingrediente {{ $i + 1 }}
+                                                </p>
+
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                                    <input
+                                                        type="text"
+                                                        name="ingredientes[{{ $i }}][nombre]"
+                                                        value="{{ old("ingredientes.$i.nombre", $ingrediente->nombre) }}"
+                                                        placeholder="Nombre"
+                                                        class="border border-gray-400 p-2 rounded-lg text-sm"
+                                                        required>
+
+                                                    <input
+                                                        type="number"
+                                                        step="0.01"
+                                                        min="0.01"
+                                                        name="ingredientes[{{ $i }}][cantidad]"
+                                                        value="{{ old("ingredientes.$i.cantidad", $ingrediente->pivot->cantidad) }}"
+                                                        placeholder="Cantidad usada"
+                                                        class="border border-gray-400 p-2 rounded-lg text-sm"
+                                                        required>
+
+                                                    <select
+                                                        name="ingredientes[{{ $i }}][unidad_medida]"
+                                                        class="border border-gray-400 p-2 rounded-lg text-sm"
+                                                        required>
+                                                        <option value="">Unidad usada</option>
+                                                        @foreach (['gr', 'kg', 'ml', 'l', 'pza'] as $unidad)
+                                                            <option value="{{ $unidad }}"
+                                                                @selected(old("ingredientes.$i.unidad_medida", $ingrediente->pivot->unidad_medida) == $unidad)>
+                                                                {{ $unidad }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+
+                                                    <input
+                                                        type="number"
+                                                        step="0.01"
+                                                        min="0.01"
+                                                        name="ingredientes[{{ $i }}][presentacion_cantidad]"
+                                                        value="{{ old("ingredientes.$i.presentacion_cantidad", $ingrediente->presentacion_cantidad) }}"
+                                                        placeholder="Presentación cantidad"
+                                                        class="border border-gray-400 p-2 rounded-lg text-sm"
+                                                        required>
+
+                                                    <select
+                                                        name="ingredientes[{{ $i }}][presentacion_unidad]"
+                                                        class="border border-gray-400 p-2 rounded-lg text-sm"
+                                                        required>
+                                                        <option value="">Unidad presentación</option>
+                                                        @foreach (['gr', 'kg', 'ml', 'l', 'pza'] as $unidad)
+                                                            <option value="{{ $unidad }}"
+                                                                @selected(old("ingredientes.$i.presentacion_unidad", $ingrediente->presentacion_unidad) == $unidad)>
+                                                                {{ $unidad }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+
+                                                    <input
+                                                        type="number"
+                                                        step="0.01"
+                                                        min="0.01"
+                                                        name="ingredientes[{{ $i }}][costo_presentacion]"
+                                                        value="{{ old("ingredientes.$i.costo_presentacion", $ingrediente->costo_presentacion) }}"
+                                                        placeholder="Costo presentación"
+                                                        class="border border-gray-400 p-2 rounded-lg text-sm"
+                                                        required>
+                                                </div>
+                                            </div>
                                         @endforeach
-                                    </ul>
-                                @else
-                                    <p class="text-sm text-gray-500">No hay ingredientes registrados</p>
-                                @endif
+                                    @else
+                                        <p class="text-sm text-gray-500">
+                                            No hay ingredientes registrados.
+                                        </p>
+                                    @endif
+                                </div>
                             </div>
 
-                            <div class="mb-5 mx-auto">
-                                <h3 class="font-bold mb-2">Agregar ingredientes</h3>
+                            {{-- AGREGAR INGREDIENTES NUEVOS --}}
+                            <div class="mb-5 border-t pt-4">
+                                <h3 class="font-bold mb-2 text-gray-800">
+                                    Agregar ingredientes
+                                </h3>
+
                                 <label class="block text-sm font-semibold mb-1">
-                                    ¿Cuantos ingredientes?
+                                    ¿Cuántos ingredientes nuevos?
                                 </label>
+
                                 <input
                                     type="number"
                                     id="cantidadIngredientes"
                                     min="1"
-                                    class="w-full mb-4 border border-gray-400 rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                    class="w-full mb-3 border border-gray-400 rounded-lg p-2 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                                     placeholder="Ej: 3">
-                                <div id="listaIngredientes" class="grid grid-cols-2 gap-2"></div>
-                                <button type="button" onclick="generalIngredientes()"
-                                    class="mt-2 bg-gray-200 px-4 py-2 rounded-lg">
+
+                                <button
+                                    type="button"
+                                    onclick="generalIngredientes()"
+                                    class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg text-sm">
                                     Generar ingrediente
                                 </button>
                             </div>
 
-                            <button class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600">
+                        </div>
+
+                        {{-- BOTÓN GUARDAR FIJO ABAJO --}}
+                        <div class="mt-5 pt-4 border-t shrink-0">
+                            <button
+                                type="submit"
+                                class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600">
                                 Guardar cambios
                             </button>
                         </div>
+
                     </div>
                 </div>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
+</div>
 
     <script>
-        function mostrarNombreArchivo(event) {
-            const input = event.target;
+    function mostrarNombreArchivo(event) {
+        const input = event.target;
 
-            if (input.files.length > 0) {
-                const archivo = input.files[0];
-                const nombreElemento = document.getElementById('nombreArchivo');
-                const archivoElemento = document.getElementById('elementoArchivo');
+        if (input.files.length > 0) {
+            const archivo = input.files[0];
+            const nombreElemento = document.getElementById('nombreArchivo');
+            const archivoElemento = document.getElementById('elementoArchivo');
 
-                nombreElemento.textContent = " ✔️ " + archivo.name;
-                archivoElemento.classList.remove('hidden');
+            nombreElemento.textContent = " ✔️ " + archivo.name;
+            archivoElemento.classList.remove('hidden');
 
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('previewContainer').innerHTML = `
-                        <img src="${e.target.result}" class="w-full h-full object-cover rounded-md">
-                    `;
-                };
-                reader.readAsDataURL(archivo);
-            }
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                document.getElementById('previewContainer').innerHTML = `
+                    <img src="${e.target.result}" class="w-full h-full object-cover rounded-md">
+                `;
+            };
+
+            reader.readAsDataURL(archivo);
+        }
+    }
+
+    let contador = document.querySelectorAll('#listaIngredientes > div').length;
+
+    function generalIngredientes() {
+        const contenedor = document.getElementById('listaIngredientes');
+        const cantidadInput = document.getElementById('cantidadIngredientes');
+        const cantidad = parseInt(cantidadInput.value);
+
+        if (!cantidad || cantidad <= 0) {
+            alert('Ingresa una cantidad válida');
+            return;
         }
 
-        let contador = 0;
-        function generalIngredientes() {
-            const contenedor = document.getElementById('listaIngredientes');
-            const cantidad = document.getElementById('cantidadIngredientes').value;
+        for (let i = 0; i < cantidad; i++) {
+            const index = contador++;
 
-            contenedor.innerHTML = '';
-            contador = 0;
+            const html = `
+                <div class="border rounded-lg p-3 shadow-sm mb-2 bg-gray-50">
+                    <p class="text-sm font-semibold mb-2 text-gray-700">
+                        Ingrediente nuevo ${index + 1}
+                    </p>
 
-            if (!cantidad || cantidad <= 0) {
-                alert('Ingresa una cantidad valida');
-                return;
-            }
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        <input
+                            type="text"
+                            name="ingredientes[${index}][nombre]"
+                            placeholder="Nombre"
+                            class="border border-gray-400 p-2 rounded-lg text-sm"
+                            required>
 
-            for (let i = 0; i < cantidad; i++) {
-                contenedor.insertAdjacentHTML('beforeend', `
-                   <div class="border rounded-lg p-3 shadow-sm mb-2">
-                        <p class="text-sm font-semibold mb-2 text-gray-700">
-                            Ingrediente ${i + 1}
-                        </p>
-                        <div class="grid grid-cols-2 gap-2">
-                            <input type="text" name="ingredientes[${i}][nombre]" placeholder="Nombre"
-                                class="border border-gray-400 p-2 rounded-lg text-sm">
-                        </div>
+                        <input
+                            type="number"
+                            step="0.01"
+                            min="0.01"
+                            name="ingredientes[${index}][cantidad]"
+                            placeholder="Cantidad usada"
+                            class="border border-gray-400 p-2 rounded-lg text-sm"
+                            required>
+
+                        <select
+                            name="ingredientes[${index}][unidad_medida]"
+                            class="border border-gray-400 p-2 rounded-lg text-sm"
+                            required>
+                            <option value="">Unidad usada</option>
+                            <option value="gr">gr</option>
+                            <option value="kg">kg</option>
+                            <option value="ml">ml</option>
+                            <option value="l">l</option>
+                            <option value="pza">pza</option>
+                        </select>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            min="0.01"
+                            name="ingredientes[${index}][presentacion_cantidad]"
+                            placeholder="Presentación cantidad"
+                            class="border border-gray-400 p-2 rounded-lg text-sm"
+                            required>
+
+                        <select
+                            name="ingredientes[${index}][presentacion_unidad]"
+                            class="border border-gray-400 p-2 rounded-lg text-sm"
+                            required>
+                            <option value="">Unidad presentación</option>
+                            <option value="gr">gr</option>
+                            <option value="kg">kg</option>
+                            <option value="ml">ml</option>
+                            <option value="l">l</option>
+                            <option value="pza">pza</option>
+                        </select>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            min="0.01"
+                            name="ingredientes[${index}][costo_presentacion]"
+                            placeholder="Costo presentación"
+                            class="border border-gray-400 p-2 rounded-lg text-sm"
+                            required>
                     </div>
-                `);
-            }
+                </div>
+            `;
+
+            contenedor.insertAdjacentHTML('beforeend', html);
         }
-    </script>
+
+        cantidadInput.value = '';
+    }
+</script>
 @endsection
