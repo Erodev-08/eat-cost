@@ -78,6 +78,44 @@
                             </div>
 
                             <div class="mb-3 max-w-lg mx-auto">
+
+                                <div>
+                                    <label for="cantidad_porciones" class="block text-xs font-semibold text-gray-100 mb-1.5 uppercase tracking-wide">
+                                        Cantidad de porciones
+                                    </label>
+
+                                    <input
+                                        type="number"
+                                        name="cantidad_porciones"
+                                        min="1"
+                                        value="{{ old('cantidad_porciones') }}"
+                                        class="w-full border rounded-lg p-2"
+                                        required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3 max-w-lg mx-auto">
+                                <label for="tipo_porcion" class="block text-xs font-semibold text-gray-100 mb-1.5 uppercase tracking-wide">
+                                    Tipo de porción
+                                </label>
+
+                                <select
+                                    name="tipo_porcion"
+                                    class="w-full border rounded-lg p-2"
+                                    required>
+
+                                    <option value="">Selecciona una opción</option>
+                                    <option value="platillos">Platillos</option>
+                                    <option value="vasos">Vasos</option>
+                                    <option value="rebanadas">Rebanadas</option>
+                                    <option value="piezas">Piezas</option>
+                                    <option value="porciones">Porciones</option>
+
+                                </select>
+                            </div>
+
+
+                            <div class="mb-3 max-w-lg mx-auto">
                                 <label for="procedimiento" class="block text-xs font-semibold text-gray-100 mb-1.5 uppercase tracking-wide">Procedimiento</label>
                                 <textarea name="procedimiento" id="procedimiento" class="w-full pr-4 py-2 rounded-lg border border-gray-600 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent" style="height: 8rem">{{ old('procedimiento') }}</textarea>
                                 @error('procedimiento')

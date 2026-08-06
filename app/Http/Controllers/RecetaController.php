@@ -17,6 +17,8 @@ class RecetaController extends Controller
     public function store(Request $request) {
         $validated = $request->validate([
         'nombre_receta' => ['required', 'string', 'min:3', 'max:150'],
+        'cantidad_porciones' => ['required', 'integer', 'min:1'],
+        'tipo_porcion' => ['required', 'string'],
         'descripcion' => ['nullable', 'string'],
         'procedimiento' => ['nullable', 'string'],
         'imagen' => ['nullable', 'image', 'max:2048'],
@@ -38,6 +40,8 @@ class RecetaController extends Controller
         $receta = Receta::create([
         'nombre_receta' => $request->input('nombre_receta'),
         'slug' => $this->makeUniqueSlug($request->input('nombre_receta')),
+        'cantidad_porciones' => $validated['cantidad_porciones'],
+        'tipo_porcion' => $validated['tipo_porcion'],
         'porciones' => null,
         'id_usuario' => auth()->id(),
         'fecha_creacion' => now()->toDateString(),
@@ -74,7 +78,8 @@ class RecetaController extends Controller
         'descripcion' => ['nullable', 'string'],
         'procedimiento' => ['nullable', 'string'],
         'imagen' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
-
+        'cantidad_porciones' => ['required', 'integer', 'min:1'],
+        'tipo_porcion' => ['required', 'string'],
         'ingredientes' => ['required', 'array'],
         'ingredientes.*.nombre' => ['required', 'string', 'max:100'],
         'ingredientes.*.cantidad' => ['required', 'numeric', 'min:0.01'],
@@ -97,6 +102,8 @@ class RecetaController extends Controller
         $receta->update([
             'nombre_receta' => $validated['nombre_receta'],
             'slug' => $this->makeUniqueSlug($validated['nombre_receta'], $receta->id_receta),
+            'cantidad_porciones' => $validated['cantidad_porciones'],
+            'tipo_porcion' => $validated['tipo_porcion'],
             'descripcion' => $validated['descripcion'] ?? null,
             'procedimiento' => $validated['procedimiento'] ?? null,
             'imagen' => $rutaImagen,
