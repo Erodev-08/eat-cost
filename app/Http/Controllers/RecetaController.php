@@ -27,7 +27,6 @@ class RecetaController extends Controller
         'ingredientes.*.cantidad' => ['required', 'numeric', 'min:0.01'],
         'ingredientes.*.unidad_medida' => ['required', 'string', 'max:20'],
         'ingredientes.*.presentacion_cantidad' => ['required', 'numeric', 'min:0.01'],
-        'ingredientes.*.presentacion_unidad' => ['required', 'string', 'max:20'],
         'ingredientes.*.costo_presentacion' => ['required', 'numeric', 'min:0.01'],
 
     ]);
@@ -85,7 +84,6 @@ class RecetaController extends Controller
         'ingredientes.*.cantidad' => ['required', 'numeric', 'min:0.01'],
         'ingredientes.*.unidad_medida' => ['required', 'string', 'max:20'],
         'ingredientes.*.presentacion_cantidad' => ['required', 'numeric', 'min:0.01'],
-        'ingredientes.*.presentacion_unidad' => ['required', 'string', 'max:20'],
         'ingredientes.*.costo_presentacion' => ['required', 'numeric', 'min:0.01'],
     ]);
 
@@ -148,34 +146,60 @@ class RecetaController extends Controller
         return $query->exists();
     }
 
-   private function syncIngredientes(Receta $receta, array $ingredientes): void
-    {
-        $syncData = [];
+   private function syncIngredientes(
+            Receta $receta,
+            array $ingredientes
+        ): void
+        {
+            $syncData = [];
 
-        foreach ($ingredientes as $ing) {
-            $nombre = trim($ing['nombre'] ?? '');
+            foreach ($ingredientes as $ing) {
 
-            if ($nombre === '') {
-                continue;
+                $nombre = trim($ing['nombre'] ?? '');
+
+                if ($nombre === '') {
+                    continue;
+                }
+
+
+                $unidad =
+                    $ing['unidad_medida'] ?? null;
+
+
+                $ingrediente = Ingrediente::updateOrCreate(
+
+                    ['nombre' => $nombre],
+
+                    [
+                        'unidad_medida' =>
+                            $unidad,
+
+                        'presentacion_cantidad' =>
+                            $ing['presentacion_cantidad'] ?? null,
+
+                        'presentacion_unidad' =>
+                            $unidad,
+
+                        'costo_presentacion' =>
+                            $ing['costo_presentacion'] ?? null,
+                    ]
+                );
+
+
+                $syncData[$ingrediente->id_ingrediente] = [
+
+                    'cantidad' =>
+                        $ing['cantidad'] ?? 0,
+
+                    'unidad_medida' =>
+                        $unidad,
+
+                    'merma_aplicada' =>
+                        $ing['merma_aplicada'] ?? 0,
+                ];
             }
 
-            $ingrediente = Ingrediente::updateOrCreate(
-                ['nombre' => $nombre],
-                [
-                    'unidad_medida' => $ing['unidad_medida'] ?? null,
-                    'presentacion_cantidad' => $ing['presentacion_cantidad'] ?? null,
-                    'presentacion_unidad' => $ing['presentacion_unidad'] ?? null,
-                    'costo_presentacion' => $ing['costo_presentacion'] ?? null,
-                ]
-            );
 
-            $syncData[$ingrediente->id_ingrediente] = [
-                'cantidad' => $ing['cantidad'] ?? 0,
-                'unidad_medida' => $ing['unidad_medida'] ?? null,
-                'merma_aplicada' => $ing['merma_aplicada'] ?? 0,
-            ];
+            $receta->ingredientes()->sync($syncData);
         }
-
-        $receta->ingredientes()->sync($syncData);
-    }
 }

@@ -249,7 +249,7 @@
 
             for (let i = 0; i < cantidad; i++) {
                 contenedor.insertAdjacentHTML('beforeend', `
-                <div class="border rounded-lg p-3 shadow-sm mb-2">
+                <div class="ingrediente-item border rounded-lg p-3 shadow-sm mb-2">
 
                         <p class="text-sm font-semibold mb-2 text-gray-700">
                             Ingrediente ${i + 1}
@@ -273,12 +273,13 @@
                                 class="border border-gray-400 p-2 rounded-lg text-sm"
                                 required>
 
-                            <select 
+                            <select
                                 name="ingredientes[${i}][unidad_medida]"
-                                class="border border-gray-400 p-2 rounded-lg text-sm"
-                                required>
-                                <option value="">Unidad usada</option>
-                                <option value="gr">gr</option>
+                                class="unidad-medida w-full rounded-lg border border-gray-400 p-2 text-sm"
+                                required
+                            >
+                                <option value="">Seleccionar unidad</option>
+                                <option value="g">g</option>
                                 <option value="kg">kg</option>
                                 <option value="ml">ml</option>
                                 <option value="l">l</option>
@@ -294,17 +295,22 @@
                                 class="border border-gray-400 p-2 rounded-lg text-sm"
                                 required>
 
-                            <select 
-                                name="ingredientes[${i}][presentacion_unidad]"
-                                class="border border-gray-400 p-2 rounded-lg text-sm"
-                                required>
-                                <option value="">Unidad presentación</option>
-                                <option value="gr">gr</option>
-                                <option value="kg">kg</option>
-                                <option value="ml">ml</option>
-                                <option value="l">l</option>
-                                <option value="pza">pza</option>
-                            </select>
+                            <div>
+                                <input
+                                    type="text"
+                                    class="presentacion-unidad-visible
+                                        w-full rounded-lg border-gray-300
+                                        bg-gray-100 cursor-not-allowed"
+                                    placeholder="Unidad"
+                                    readonly
+                                >
+
+                                <input
+                                    type="hidden"
+                                    name="ingredientes[${i}][presentacion_unidad]"
+                                    class="presentacion-unidad"
+                                >
+                            </div>
 
                             <input 
                                 type="number" 
@@ -323,5 +329,43 @@
 }
 
     </script>
+
+    <script>
+    document.addEventListener('change', function (event) {
+
+        if (!event.target.classList.contains('unidad-medida')) {
+            return;
+        }
+
+
+        const contenedor =
+            event.target.closest('.ingrediente-item');
+
+        if (!contenedor) {
+            return;
+        }
+
+
+        const presentacionUnidad =
+            contenedor.querySelector('.presentacion-unidad');
+
+        const presentacionVisible =
+            contenedor.querySelector('.presentacion-unidad-visible');
+
+
+        const unidad = event.target.value;
+
+
+        if (presentacionUnidad) {
+            presentacionUnidad.value = unidad;
+        }
+
+
+        if (presentacionVisible) {
+            presentacionVisible.value = unidad;
+        }
+
+    });
+</script>
 
 @endsection

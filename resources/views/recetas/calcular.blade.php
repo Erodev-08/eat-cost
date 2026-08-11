@@ -161,6 +161,26 @@
                                 required>
                         </div>
 
+                        {{-- PRODUCCION --}}
+
+                        <div class="bg-blue-50 border rounded-lg p-4 mb-6">
+                            <h3 class="font-bold text-lg mb-2">
+                                Producción de la receta
+                            </h3>
+
+                            <p>
+                                Esta receta produce
+
+                                <strong>
+
+                                    {{ $receta->cantidad_porciones }}
+                                    {{ strtolower($receta->tipo_porcion) }}
+
+                                </strong>
+                            </p>
+                            
+                        </div>
+
                         {{-- COSTOS INDIRECTOS --}}
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -189,16 +209,16 @@
                                 required>
                         </div>
 
-                        {{-- PRECIO VENTA --}}
+                        {{-- PRECIO POR PORCION --}}
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Precio de venta
+                                Precio de venta por {{ strtolower($receta->tipo_porcion) }}
                             </label>
 
                             <input
                                 type="number"
                                 step="0.01"
-                                name="precio_venta"
+                                name="precio_por_porcion"
                                 class="w-full border border-gray-300 rounded-lg px-4 py-2"
                                 required>
                         </div>
