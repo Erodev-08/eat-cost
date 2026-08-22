@@ -16,9 +16,8 @@ class CalculoRecetaController extends Controller
         'mano_obra' => 'required|numeric|min:0',
         'costos_indirectos' => 'required|numeric|min:0',
         'gastos_operacion' => 'required|numeric|min:0',
-        'precio_venta' => 'required|numeric|min:0.01',
+        'precio_por_porcion' => 'required|numeric|min:0.01',
         'utilidad_deseada' => 'required|numeric|min:0|max:100',
-
         'ingredientes' => 'nullable|array',
         'ingredientes.*.merma_porcentaje' => 'nullable|numeric|min:0|max:99',
         'ingredientes.*.peso_util' => 'nullable|numeric|min:0',
@@ -113,42 +112,85 @@ class CalculoRecetaController extends Controller
             $manoObra = $request->mano_obra;
             $costosIndirectos = $request->costos_indirectos;
             $gastosOperacion = $request->gastos_operacion;
-            $precioVenta = $request->precio_venta;
+
+            $precioPorPorcion = $request->precio_por_porcion;
+            $cantidadPorciones = $receta->cantidad_porciones;
+
             $utilidadDeseada = $request->utilidad_deseada / 100;
 
             $costoProduccion = $costoNeto + $manoObra + $costosIndirectos;
-            $costoTotal = $costoProduccion + $gastosOperacion;
-            $precioSinIva = $precioVenta / 1.16;
-            $utilidadReal = $precioSinIva - $costoTotal;
-            $utilidadRealPorcentaje = $precioSinIva > 0
-                ? ($utilidadReal / $precioSinIva) * 100
-                : 0;
 
-            $costoObjetivo = $precioSinIva * (1 - $utilidadDeseada);
-            $diferenciaObjetivo = $costoTotal - $costoObjetivo;
+            $costoTotal = $costoProduccion + $gastosOperacion;
+
+            if ($cantidadPorciones <= 0) {
+                return back()->withErrors([
+                    'cantidad_porciones' => 'La receta debe producir al menos una porción.'
+                ])->withInput();
+            }
+
+            $costoPorPorcion = $costoTotal / $cantidadPorciones;
+
+            $precioPorPorcionSinIVA = $precioPorPorcion / 1.16;
+
+            $gananciaPorPorcion = $precioPorPorcionSinIVA - $costoPorPorcion;
+
+            $gananciaTotal = $gananciaPorPorcion * $cantidadPorciones;
+
+            $utilidadRealPorcentaje =
+                $precioPorPorcionSinIVA > 0
+                    ? ($gananciaPorPorcion / $precioPorPorcionSinIVA) * 100
+                    : 0;
+
+            $costoObjetivo =
+                $precioPorPorcionSinIVA *
+                (1 - $utilidadDeseada);
+
+            $diferenciaObjetivo =
+                $costoPorPorcion -
+                $costoObjetivo;
 
             $interpretacion = $diferenciaObjetivo > 0
                 ? 'El costo real supera el costo objetivo. Se recomienda reducir mermas, buscar mejores precios de ingredientes u optimizar mano de obra.'
                 : 'La receta cumple con la utilidad deseada. El costo está dentro del objetivo.';
             
             $recetaElaborada = RecetaCalc::create([
-                'id_receta' => $receta->id_receta,
-                'id_usuario' => auth()->id(),
-                'mano_obra' => $manoObra,
-                'costos_indirectos' => $costosIndirectos,
-                'gastos_operacion' => $gastosOperacion,
-                'precio_venta' => $precioVenta,
-                'utilidad_deseada' => $request->utilidad_deseada,
-                'costo_neto' => $costoNeto,
-                'costo_produccion' => $costoProduccion,
-                'costo_total' => $costoTotal,
-                'precio_sin_iva' => $precioSinIva,
-                'utilidad_real' => $utilidadReal,
-                'utilidad_real_porcentaje' => $utilidadRealPorcentaje,
-                'costo_objetivo' => $costoObjetivo,
-                'diferencia_objetivo' => $diferenciaObjetivo,
-                'interpretacion' => $interpretacion,
-            ]);
+            'id_receta' => $receta->id_receta,
+            'id_usuario' => auth()->id(),
+
+            'cantidad_porciones' => $cantidadPorciones,
+
+            'mano_obra' => $manoObra,
+            'costos_indirectos' => $costosIndirectos,
+            'gastos_operacion' => $gastosOperacion,
+
+            'precio_por_porcion' => $precioPorPorcion,
+
+            // Si aún conservas la columna precio_venta, guarda el total de la producción
+            'precio_venta' => $precioPorPorcion * $cantidadPorciones,
+
+            'utilidad_deseada' => $request->utilidad_deseada,
+
+            'costo_neto' => $costoNeto,
+            'costo_produccion' => $costoProduccion,
+            'costo_total' => $costoTotal,
+
+            'costo_por_porcion' => $costoPorPorcion,
+
+            'precio_sin_iva' => $precioPorPorcionSinIVA,
+
+            // Si aún existe esta columna, ahora representará la ganancia total
+            'utilidad_real' => $gananciaTotal,
+
+            'ganancia_por_porcion' => $gananciaPorPorcion,
+            'ganancia_total' => $gananciaTotal,
+
+            'utilidad_real_porcentaje' => $utilidadRealPorcentaje,
+
+            'costo_objetivo' => $costoObjetivo,
+            'diferencia_objetivo' => $diferenciaObjetivo,
+
+            'interpretacion' => $interpretacion,
+        ]);
 
             foreach ($detalles as $detalle) {
                 $detalle['id_receta_elaborada'] = $recetaElaborada->id_receta_elaborada;
@@ -168,7 +210,30 @@ class CalculoRecetaController extends Controller
             'ingredientes.ingrediente'
         ])->findOrFail($id);
 
-        return view('recetas_elaboradas.show', compact('recetaElaborada'));
+        $total = $recetaElaborada->costo_total;
+
+        $porcentajes = [
+            'ingredientes' => $total > 0
+                ? round(($recetaElaborada->costo_neto / $total) * 100, 2)
+                : 0,
+
+            'mano_obra' => $total > 0
+                ? round(($recetaElaborada->mano_obra / $total) * 100, 2)
+                : 0,
+
+            'indirectos' => $total > 0
+                ? round(($recetaElaborada->costos_indirectos / $total) * 100, 2)
+                : 0,
+
+            'operacion' => $total > 0
+                ? round(($recetaElaborada->gastos_operacion / $total) * 100, 2)
+                : 0,
+        ];
+
+        return view(
+            'recetas_elaboradas.show',
+            compact('recetaElaborada', 'porcentajes')
+        );
     }
 
     public function create(Receta $receta)
@@ -192,4 +257,5 @@ class CalculoRecetaController extends Controller
 
         return view('recetas_elaboradas.index', compact('recetasElaboradas'));
     }
+
 }

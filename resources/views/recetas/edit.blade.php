@@ -74,6 +74,65 @@
                             </div>
 
                             <div class="mb-3 max-w-lg mx-auto">
+
+                            {{-- Cantidad de porciones --}}
+                            <div>
+                                <label for="cantidad_porciones" class="block text-xs font-semibold text-gray-100 mb-1.5 uppercase tracking-wide">
+                                    Cantidad de porciones
+                                </label>
+
+                                <input
+                                    type="number"
+                                    name="cantidad_porciones"
+                                    min="1"
+                                    value="{{ old('cantidad_porciones', $receta->cantidad_porciones) }}"
+                                    class="w-full border border-gray-300 rounded-lg px-4 py-2"
+                                    required>
+                            </div>
+
+                            {{-- Tipo de porción --}}
+                            <div>
+                                <label for="tipo_porcion" class="block text-xs font-semibold text-gray-100 mb-1.5 uppercase tracking-wide">
+                                    Tipo de porción
+                                </label>
+
+                                <select
+                                    name="tipo_porcion"
+                                    class="w-full border border-gray-300 rounded-lg px-4 py-2"
+                                    required>
+
+                                    <option value="">Selecciona una opción</option>
+
+                                    <option value="platillos"
+                                        {{ old('tipo_porcion', $receta->tipo_porcion) == 'platillos' ? 'selected' : '' }}>
+                                        Platillos
+                                    </option>
+
+                                    <option value="vasos"
+                                        {{ old('tipo_porcion', $receta->tipo_porcion) == 'vasos' ? 'selected' : '' }}>
+                                        Vasos
+                                    </option>
+
+                                    <option value="rebanadas"
+                                        {{ old('tipo_porcion', $receta->tipo_porcion) == 'rebanadas' ? 'selected' : '' }}>
+                                        Rebanadas
+                                    </option>
+
+                                    <option value="piezas"
+                                        {{ old('tipo_porcion', $receta->tipo_porcion) == 'piezas' ? 'selected' : '' }}>
+                                        Piezas
+                                    </option>
+
+                                    <option value="porciones"
+                                        {{ old('tipo_porcion', $receta->tipo_porcion) == 'porciones' ? 'selected' : '' }}>
+                                        Porciones
+                                    </option>
+
+                                </select>
+                            </div>
+                        </div>
+
+                            <div class="mb-3 max-w-lg mx-auto">
                                 <label for="procedimiento" class="block text-xs font-semibold text-gray-100 mb-1.5 uppercase tracking-wide">Procedimiento</label>
                                 <textarea name="procedimiento" id="procedimiento" class="w-full pr-4 py-2 rounded-lg border border-gray-600 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent" style="height: 8rem">{{ old('procedimiento', $receta->procedimiento) }}</textarea>
                                 @error('procedimiento')
