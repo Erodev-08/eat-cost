@@ -8,13 +8,21 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="flex items-center justify-between">
                 <div class="mb-8">
-                    <h1 class="text-4xl font-bold text-blue-900 mb-3 mt-3">Recetas</h1>
+                    <h1 class="text-4xl font-extrabold text-gray-900 mb-2 mt-3 tracking-tight">
+                        Mis Recetas
+                        <span class="block h-1.5 w-16 bg-emerald-500 rounded-full mt-2"></span>
+                    </h1>
                 </div>
+                @auth
                 <div class="mb-8">
-                    <a href="{{ route('recetas.create') }}" class="border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-gray-200 rounded-lg md:py-3 md:px-3 mb-3 px-3 py-3 mx-3 mt-3">Agregar receta</a>
+                    <a href="{{ route('recetas.create') }}" class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl py-2.5 px-4 shadow-sm shadow-emerald-600/20 transition-all hover:-translate-y-0.5 mt-3">
+                        <i class="ri-add-line text-lg"></i>
+                        <span>Agregar receta</span>
+                    </a>
                 </div>
+                @endauth
             </div>
-            <hr class="mb-8">
+            <hr class="mb-8 border-gray-200 border-dashed">
         </div>
     </div>
 
@@ -22,36 +30,53 @@
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
             @foreach ($recetas as $receta)
                 <div class="mb-8">
-                    <div class="max-w-sm bg-white shadow-lg mx-auto md:max-w-4xl rounded-xl overflow-hidden"> {{-- max-w-md bg-white shadow-lg mx-auto md:max-w-4xl rounded-xl overflow-hidden --}}
+                    <div class="max-w-sm bg-white shadow-sm border border-gray-100 hover:shadow-md transition-shadow mx-auto md:max-w-4xl rounded-2xl overflow-hidden">
                         <div class="md:flex">
-                            <div class="shrink-0">
-                                @if ($receta->imagen)
-                                    <img 
-                                        src="{{ asset('storage/' . $receta->imagen) }}"
-                                        alt="imagen receta"
-                                        class="h-40 w-full md:w-60 md:h-full object-cover">
-                                @else
-                                    <div class="h-40 w-full md:w-60 md:h-full bg-gray-200 flex items-center justify-center text-gray-500">
-                                        Sin imagen
-                                    </div>
-                                @endif
+                            <div class="shrink-0 w-full md:w-64 lg:w-72 bg-gray-50 flex items-center justify-center overflow-hidden border-b md:border-b-0 md:border-r border-gray-100 relative">
+                                <div class="w-full aspect-[4/3] md:h-52 lg:h-60">
+                                    @if ($receta->imagen)
+                                        <img 
+                                            src="{{ asset('storage/' . $receta->imagen) }}"
+                                            alt="{{ $receta->nombre_receta }}"
+                                            loading="lazy"
+                                            class="w-full h-full object-cover object-center transition-transform duration-300 hover:scale-105">
+                                    @else
+                                        <div class="w-full h-full flex items-center justify-center text-gray-400 p-4">
+                                            <div class="text-center">
+                                                <i class="ri-image-line text-2xl mb-1 text-gray-300"></i>
+                                                <p class="text-xs font-medium">Sin imagen</p>
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
-                            <div class="p-8">
-                                <h2 class="text-xl font-bold mb-2">{{ $receta->nombre_receta }}</h2> {{-- {{ $receta->name }} --}}
-                                <p class="text-gray-600 text-sm mb-3">{{ $receta->descripcion }}</p> {{-- {{ $receta->descripcion }} --}}
-                                <div class="flex flex-wrap gap-2">
-                                    <a href="{{ route('recetas.show', $receta) }}" class="px-3 py-2 inline-block bg-green-600 text-white rounded-xl hover:bg-green-700">Ver receta</a>
-                                    <a href="{{ route('recetas.edit', $receta) }}" class="px-3 py-2 inline-block bg-blue-600 text-white rounded-xl hover:bg-blue-700">Editar</a>
-                                    <a href="{{ route('recetas.calcular', $receta) }}" class="px-3 py-2 inline-block bg-yellow-500 text-white rounded-xl hover:bg-yellow-600">Calcular receta
+                            <div class="p-6 md:p-8 flex-1 flex flex-col justify-center">
+                                <h2 class="text-2xl font-bold text-gray-900 mb-2">{{ $receta->nombre_receta }}</h2>
+                                <p class="text-gray-600 text-sm mb-6 leading-relaxed">{{ $receta->descripcion }}</p>
+                                <div class="flex flex-wrap gap-3 mt-auto">
+                                    <a href="{{ route('recetas.show', $receta) }}" class="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors shadow-sm">
+                                        <i class="ri-eye-line"></i>
+                                        <span>Ver receta</span>
                                     </a>
-                                    <button
-                                    type="button"   
-                                    class="px-3 py-2 inline-block bg-red-600 text-white rounded-xl hover:bg-red-700"
-                                    data-delete-action="{{ route('recetas.destroy', $receta) }}"
-                                    data-delete-name="{{ $receta->nombre_receta }}"
-                                    onclick="confirmDelete(this)">
-                                    Eliminar
-                                </button>
+                                    <a href="{{ route('recetas.calcular', $receta) }}" class="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-50 text-emerald-700 border border-emerald-200 text-sm font-medium rounded-lg hover:bg-emerald-100 transition-colors">
+                                        <i class="ri-scales-3-line"></i>
+                                        <span>Calcular</span>
+                                    </a>
+                                    @if(auth()->check() && auth()->id() === $receta->id_usuario)
+                                        <a href="{{ route('recetas.edit', $receta) }}" class="inline-flex items-center gap-1.5 px-4 py-2 bg-white text-gray-700 border border-gray-200 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                                            <i class="ri-pencil-line"></i>
+                                            <span>Editar</span>
+                                        </a>
+                                        <button
+                                            type="button"   
+                                            class="inline-flex items-center gap-1.5 px-4 py-2 bg-white text-red-600 border border-gray-200 text-sm font-medium rounded-lg hover:bg-red-50 hover:border-red-200 transition-colors"
+                                            data-delete-action="{{ route('recetas.destroy', $receta) }}"
+                                            data-delete-name="{{ $receta->nombre_receta }}"
+                                            onclick="confirmDelete(this)">
+                                            <i class="ri-delete-bin-line"></i>
+                                            <span>Eliminar</span>
+                                        </button>
+                                    @endif
                                 </div>
                             </div>
                         </div>

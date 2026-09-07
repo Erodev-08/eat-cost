@@ -3,7 +3,7 @@
         [
             'route'     => route('home'),
             'active'    => request()->routeIs('home'),
-            'name'      => __('Home')
+            'name'      => __('Inicio')
         ],
         [
             'route'     => route('recetas'),
@@ -11,146 +11,129 @@
             'name'      => __('Recetas') 
         ],
         [
-        'route'     => route('recetas.elaboradas.index'),
-        'active'    => request()->routeIs('recetas.elaboradas.*'),
-        'name'      => __('Mis recetas')
-        ],
-        [
-            'route'     => route('contact'),
-            'active'    => request()->routeIs('contact'),
-            'name'      => __('Contacto')
+            'route'     => route('recetas.elaboradas.index'),
+            'active'    => request()->routeIs('recetas.elaboradas.*'),
+            'name'      => __('Costeo & Mermas')
         ]
     ];
 @endphp
 
-<nav class="bg-blue-50 fixed w-full z-20 top-0 start-0 border-b border-default shadow-sm">
-    <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-2 md:p-auto">
-        {{-- Logo --}}
-        <a href="{{ route('home') }}" class="flex items-center space-x-3 rtl:space-x-reverse">
-            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm ring-1 ring-white/20">
-                <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                    <path d="M7 20h10a2 2 0 0 0 2-2v-4H5v4a2 2 0 0 0 2 2Z" />
-                    <path d="M7 14c0-2 1.5-3.5 3.5-3.5h3c2 0 3.5 1.5 3.5 3.5" />
-                    <path d="M8 10.5c0-2 1.2-3.7 3-4.5" />
-                    <path d="M16 10.5c0-2-1.2-3.7-3-4.5" />
-                </svg>
-			</div>
+<nav class="bg-white/95 backdrop-blur-xs fixed w-full z-30 top-0 start-0 border-b border-gray-200 shadow-xs">
+    <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4 py-3">
+        
+        {{-- Logo Eat-Cost --}}
+        <a href="{{ route('home') }}" class="flex items-center gap-2.5 group">
+            <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-sm">
+                <i class="ri-restaurant-line text-lg"></i>
+            </div>
             <div>
-				<div class="text-2xl font-bold tracking-tight">Eat Cost</div>
-			</div>
+                <div class="text-xl font-bold tracking-tight text-gray-900">
+                    <span class="text-emerald-700 font-extrabold">Eat</span><span class="text-gray-300 font-light mx-0.5">•</span><span class="text-emerald-500 font-semibold">Cost</span>
+                </div>
+            </div>
         </a>
         
-        {{-- Botones de la derecha y menú hamburguesa --}}
+        {{-- Botones de la derecha --}}
         @if (Route::has('login'))
-            <div class="flex items-center md:order-2 space-x-3">
+            <div class="flex items-center md:order-2 space-x-2.5">
                 @auth
                     <div class="relative">
                         <button type="button" 
-                                class="dropdown-btn flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition duration-200">
+                                class="dropdown-btn flex items-center gap-2 px-3 py-1.5 text-sm font-semibold text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition duration-150">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                             <span>{{ Auth::user()->name }}</span>
-                            <svg class="w-4 h-4 transition-transform duration-200 dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
+                            <i class="ri-arrow-down-s-line text-xs transition-transform duration-150 dropdown-icon"></i>
                         </button>
                         
-                        <div class="dropdown-menu absolute right-0 z-50 mt-3 md:mt-9 w-48 bg-blue-50 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 opacity-0 invisible transition-all duration-200 transform -translate-y-2">
-                            <div class="py-4">
-                                <a href="{{ url('/dashboard') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-white transition duration-150">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                                    </svg>
-                                    Dashboard
-                                </a>
-                                
-                                <a href="{{ route('profile.user') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-white transition duration-150">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                    </svg>
-                                    Perfil
-                                </a>
-                                
-                                <div class="border-t border-gray-100 my-1"></div>
-                                
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit" class="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-100 transition duration-150">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                                        </svg>
-                                        Cerrar sesión
-                                    </button>
-                                </form>
-                            </div>
+                        <div class="dropdown-menu absolute right-0 z-50 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 opacity-0 invisible transition-all duration-150 transform -translate-y-2 p-1.5">
+                            <a href="{{ url('/dashboard') }}" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-lg transition duration-150">
+                                <i class="ri-home-5-line text-emerald-600"></i>
+                                Dashboard
+                            </a>
+                            
+                            <a href="{{ route('profile.user') }}" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-lg transition duration-150">
+                                <i class="ri-user-line text-emerald-600"></i>
+                                Mi Perfil
+                            </a>
+
+                            <a href="{{ route('recetas') }}" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-lg transition duration-150">
+                                <i class="ri-book-open-line text-emerald-600"></i>
+                                Recetas
+                            </a>
+                            
+                            <div class="border-t border-gray-100 my-1"></div>
+                            
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="flex items-center gap-2 w-full px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition duration-150 text-left">
+                                    <i class="ri-logout-box-r-line"></i>
+                                    Cerrar sesión
+                                </button>
+                            </form>
                         </div>
                     </div>
                 @else
-                    {{-- Botones visibles solo en desktop --}}
-                    <div class="hidden md:flex md:space-x-3">
-                        <button type="button" class="text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm font-medium transition duration-200" onclick="window.location.href='{{ route('login') }}'">
-                            Inicia Sesión
-                        </button>
-                        <button type="button" class="text-white bg-teal-600 hover:bg-teal-700 px-4 py-2 rounded-lg text-sm font-medium transition duration-200" onclick="window.location.href='{{ route('register') }}'">
+                    <div class="hidden md:flex md:space-x-2">
+                        <a href="{{ route('login') }}" class="text-gray-600 hover:text-emerald-700 px-3.5 py-1.5 rounded-lg text-sm font-semibold transition duration-150">
+                            Iniciar Sesión
+                        </a>
+                        <a href="{{ route('register') }}" class="text-white bg-emerald-600 hover:bg-emerald-700 px-3.5 py-1.5 rounded-lg text-sm font-semibold shadow-xs transition duration-150">
                             Regístrate
-                        </button>
+                        </a>
                     </div>
                 @endauth
                
-                {{-- Botón menú hamburguesa (siempre visible en móvil) --}}
-                <button data-collapse-toggle="navbar-sticky" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-600 rounded-lg md:hidden hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200" aria-controls="navbar-sticky" aria-expanded="false">
+                {{-- Menú móvil --}}
+                <button data-collapse-toggle="navbar-sticky" type="button" class="inline-flex items-center p-1.5 text-gray-500 rounded-lg md:hidden hover:bg-gray-100 transition duration-150" aria-controls="navbar-sticky" aria-expanded="false">
                     <span class="sr-only">Abrir menú</span>
-                    <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M5 7h14M5 12h14M5 17h14"/>
-                    </svg>
+                    <i class="ri-menu-line text-lg"></i>
                 </button>
             </div>
         @endif
         
-        {{-- Menú de navegación responsive (incluye enlaces y botones de autenticación) --}}
+        {{-- Enlaces de navegación --}}
         <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-sticky"> 
-            <ul class="flex flex-col px-4 py-5 font-medium rounded-lg md:space-x-9 rtl:space-x-reverse md:flex-row md:mt-0 md:bg-transparent">
-                {{-- Enlaces de navegación --}}
+            <ul class="flex flex-col p-4 md:p-0 mt-3 md:space-x-6 md:flex-row md:mt-0 font-medium text-sm">
                 @foreach ($items as $item)
                     <li>
                         <a href="{{ $item['route'] }}" 
-                        class="block py-2 px-3 mt-3 rounded-lg transition duration-300 
+                        class="block py-1.5 px-2.5 rounded-lg transition duration-150 
                         {{ $item['active'] 
-                            ? 'text-white bg-blue-600 md:bg-blue-600 md:text-white' 
-                            : 'text-gray-700 hover:text-blue-600 md:hover:bg-transparent md:hover:text-blue-600' 
-                        }} md:py-2 md:px-3">
+                            ? 'text-emerald-700 bg-emerald-50 md:bg-transparent font-bold' 
+                            : 'text-gray-600 hover:text-emerald-700 hover:bg-gray-50 md:hover:bg-transparent' 
+                        }}">
                             {{ $item['name'] }}
                         </a>
                     </li>
                 @endforeach
-                  {{-- Botones de login/registro exclusivos para el menú responsive --}}
-                  <li class="md:hidden space-y-2 mt-2 pt-2 border-t border-gray-200">
-                      <a href="{{ route('login') }}" class="block py-2 px-3 mt-3 text-white bg-blue-600 hover:bg-blue-700 rounded-lg text-sm font-medium transition duration-200">
-                          Inicia Sesion
-                      </a>
-                      <a href="{{ route('register') }}" class="block py-2 px-3 mt-3 text-white bg-teal-600 hover:bg-teal-700 rounded-lg text-sm font-medium transition duration-200">
-                          Registrate
-                      </a>
-                  </li>
+
+                @guest
+                    <li class="md:hidden space-y-1.5 mt-2 pt-2 border-t border-gray-100">
+                        <a href="{{ route('login') }}" class="block text-center py-2 px-3 text-gray-700 bg-gray-100 rounded-lg text-sm font-semibold">
+                            Iniciar Sesión
+                        </a>
+                        <a href="{{ route('register') }}" class="block text-center py-2 px-3 text-white bg-emerald-600 rounded-lg text-sm font-semibold">
+                            Registrarse
+                        </a>
+                    </li>
+                @endguest
             </ul>
         </div>
     </div>
 </nav>
 
-{{-- Script para el menú móvil --}}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Manejar todos los dropdowns en la página
         const dropdownBtns = document.querySelectorAll('.dropdown-btn');
 
         dropdownBtns.forEach(btn => {
             const dropdown = btn.parentElement.querySelector('.dropdown-menu');
             const icon = btn.querySelector('.dropdown-icon');
 
-            // Toggle dropdown al hacer click
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 const isOpen = dropdown.classList.contains('opacity-100');
 
-                // Cerrar todos los dropdowns primero
                 document.querySelectorAll('.dropdown-menu').forEach(menu => {
                     if (menu !== dropdown) {
                         menu.classList.remove('opacity-100', 'visible');
@@ -160,7 +143,6 @@
                     }
                 });
 
-                // Toggle el actual
                 if (!isOpen) {
                     dropdown.classList.remove('opacity-0', 'invisible', '-translate-y-2');
                     dropdown.classList.add('opacity-100', 'visible', 'translate-y-0');
@@ -173,7 +155,6 @@
             });
         });
 
-        // Cerrar dropdown al hacer click fuera
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.relative')) {
                 document.querySelectorAll('.dropdown-menu').forEach(menu => {
@@ -184,10 +165,7 @@
                 });
             }
         });
-    });
 
-    // Script para el menú hamburguesa
-    document.addEventListener('DOMContentLoaded', function() {
         const menuButton = document.querySelector('[data-collapse-toggle="navbar-sticky"]');
         const menu = document.getElementById('navbar-sticky');
 

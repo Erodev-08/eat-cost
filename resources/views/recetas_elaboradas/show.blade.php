@@ -4,7 +4,217 @@
 
 @section('content')
 
-<div class="py-10">
+<style>
+    .report-preview-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        background: rgba(15, 23, 42, 0.68);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+    }
+
+    .report-preview-modal.is-open {
+        display: flex;
+    }
+
+    .report-preview-panel {
+        display: flex;
+        flex-direction: column;
+        width: min(1180px, 100%);
+        height: min(860px, 92vh);
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        border-radius: 20px;
+        background: #ffffff;
+        box-shadow: 0 28px 90px rgba(15, 23, 42, 0.38);
+    }
+
+    .report-preview-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 18px 22px;
+        color: #ffffff;
+        background: #15803d;
+        border-bottom: 1px solid #166534;
+    }
+
+    .report-preview-heading {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .report-preview-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .report-preview-title {
+        margin: 0;
+        color: #ffffff;
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .report-preview-description {
+        margin: 4px 0 0;
+        color: #dcfce7;
+        font-size: 13px;
+    }
+
+    .report-preview-close {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        width: 38px;
+        height: 38px;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        border-radius: 10px;
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.12);
+        cursor: pointer;
+    }
+
+    .report-preview-close:hover {
+        background: rgba(255, 255, 255, 0.24);
+    }
+
+    .report-preview-body {
+        min-height: 0;
+        flex: 1;
+        padding: 18px;
+        background: #f1f5f9;
+    }
+
+    .report-preview-frame {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border: 1px solid #cbd5e1;
+        border-radius: 12px;
+        background: #ffffff;
+        box-shadow: 0 3px 12px rgba(15, 23, 42, 0.08);
+    }
+
+    .report-preview-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 10px;
+        padding: 14px 22px;
+        border-top: 1px solid #e2e8f0;
+        background: #ffffff;
+    }
+
+    .report-preview-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 40px;
+        padding: 0 16px;
+        border-radius: 9px;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .report-preview-action.secondary {
+        border: 1px solid #cbd5e1;
+        color: #334155;
+        background: #ffffff;
+    }
+
+    .report-preview-action.excel {
+        color: #ffffff;
+        background: #059669;
+    }
+
+    .report-preview-action.pdf {
+        color: #ffffff;
+        background: #15803d;
+    }
+
+    @media (max-width: 640px) {
+        .report-preview-modal {
+            padding: 10px;
+        }
+
+        .report-preview-panel {
+            height: 94vh;
+            border-radius: 14px;
+        }
+
+        .report-preview-header {
+            padding: 14px;
+        }
+
+        .report-preview-body {
+            padding: 10px;
+        }
+
+        .report-preview-actions {
+            flex-wrap: wrap;
+            padding: 12px 14px;
+        }
+
+        .report-preview-action {
+            flex: 1 1 140px;
+        }
+    }
+
+    @media print {
+        body {
+            background: #fff !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .no-print,
+        .no-print * {
+            display: none !important;
+            visibility: hidden !important;
+        }
+
+        .report-print-area,
+        .report-print-area * {
+            visibility: visible !important;
+        }
+
+        .report-print-area {
+            position: static !important;
+            width: 100% !important;
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+            background: #fff !important;
+        }
+
+        .report-print-area .shadow-md,
+        .report-print-area .shadow-xl,
+        .report-print-area .shadow-lg {
+            box-shadow: none !important;
+        }
+    }
+</style>
+
+<div class="report-print-area py-10">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
         {{-- ENCABEZADO --}}
@@ -16,13 +226,13 @@
     <div class="grid md:grid-cols-3">
 
         {{-- Imagen --}}
-        <div class="h-72">
+        <div class="aspect-[4/3] md:aspect-auto md:h-72">
 
             @if($recetaElaborada->receta->imagen)
 
                 <img
                     src="{{ asset('storage/'.$recetaElaborada->receta->imagen) }}"
-                    class="w-full h-full object-cover">
+                    class="w-full h-full object-cover object-center">
 
             @else
 
@@ -3424,7 +3634,7 @@
     {{-- BOTONES FINALES --}}
     {{-- ================================================= --}}
 
-    <div class="mt-8 flex flex-col sm:flex-row
+    <div class="no-print mt-8 flex flex-col sm:flex-row
                 justify-end gap-3">
 
 
@@ -3504,11 +3714,48 @@
 
 
 
-        {{-- IMPRIMIR --}}
+        {{-- EXPORTAR EXCEL --}}
 
         <button
             type="button"
-            onclick="window.print()"
+            data-report-preview="{{ route('recetas.elaboradas.excel', $recetaElaborada) }}?preview=1"
+            data-report-kind="excel"
+            class="
+            inline-flex items-center justify-center
+            gap-2
+            px-5 py-3
+            rounded-xl
+            bg-emerald-600
+            text-white
+            font-semibold
+            hover:bg-emerald-700
+            transition
+            "
+        >
+
+            <svg xmlns="http://www.w3.org/2000/svg"
+                class="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor">
+
+                <path stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" />
+
+            </svg>
+
+            Exportar Excel
+
+        </button>
+
+        {{-- EXPORTAR PDF --}}
+
+        <button
+            type="button"
+            data-report-preview="{{ route('recetas.elaboradas.document', $recetaElaborada) }}"
+            data-report-kind="pdf"
             class="
             inline-flex items-center justify-center
             gap-2
@@ -3538,12 +3785,78 @@
 
             </svg>
 
-            Imprimir reporte
+            Exportar PDF
 
         </button>
 
     </div>
 
+</div>
+
+<div
+    id="report-preview-modal"
+    class="report-preview-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="report-preview-title"
+>
+    <div class="report-preview-panel">
+        <div class="report-preview-header">
+            <div class="report-preview-heading">
+                <div class="report-preview-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                </div>
+                <div>
+                    <h2 id="report-preview-title" class="report-preview-title">Vista previa del reporte</h2>
+                    <p id="report-preview-description" class="report-preview-description">Revisa el documento antes de descargarlo.</p>
+                </div>
+            </div>
+            <button
+                type="button"
+                id="close-report-preview"
+                class="report-preview-close"
+                aria-label="Cerrar vista previa"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="report-preview-body">
+            <iframe
+                id="report-preview-frame"
+                title="Vista previa del reporte PDF"
+                class="report-preview-frame"
+            ></iframe>
+        </div>
+
+        <div class="report-preview-actions">
+            <button
+                type="button"
+                id="cancel-report-preview"
+                class="report-preview-action secondary"
+            >
+                Cerrar
+            </button>
+            <a
+                id="download-report-excel"
+                href="#"
+                class="report-preview-action excel"
+            >
+                Descargar Excel
+            </a>
+            <a
+                id="download-report-pdf"
+                href="#"
+                class="report-preview-action pdf"
+            >
+                Descargar PDF
+            </a>
+        </div>
+    </div>
 </div>
         
 
@@ -3643,6 +3956,67 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             }
+        }
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const modal = document.getElementById('report-preview-modal');
+    const frame = document.getElementById('report-preview-frame');
+    const title = document.getElementById('report-preview-title');
+    const description = document.getElementById('report-preview-description');
+    const closeButton = document.getElementById('close-report-preview');
+    const cancelButton = document.getElementById('cancel-report-preview');
+    const pdfDownload = document.getElementById('download-report-pdf');
+    const excelDownload = document.getElementById('download-report-excel');
+    const previewButtons = document.querySelectorAll('[data-report-preview]');
+
+    if (!modal || !frame || !title || !description || !closeButton || !cancelButton || !pdfDownload || !excelDownload) {
+        return;
+    }
+
+    const closePreview = function () {
+        modal.classList.remove('is-open');
+        frame.removeAttribute('src');
+        title.textContent = 'Vista previa del reporte';
+        description.textContent = 'Revisa el documento antes de descargarlo.';
+        document.body.classList.remove('overflow-hidden');
+    };
+
+    previewButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+            const pdfUrl = button.dataset.reportPreview;
+            const reportKind = button.dataset.reportKind;
+            const excelUrl = @json(route('recetas.elaboradas.excel', $recetaElaborada));
+            const isExcel = reportKind === 'excel';
+
+            frame.src = pdfUrl;
+            pdfDownload.href = pdfUrl;
+            excelDownload.href = excelUrl;
+            title.textContent = isExcel ? 'Vista previa del Excel' : 'Vista previa del PDF';
+            description.textContent = isExcel
+                ? 'Revisa la tabla antes de descargar el archivo Excel.'
+                : 'Revisa el documento antes de descargar el archivo PDF.';
+            pdfDownload.style.display = isExcel ? 'none' : 'inline-flex';
+            excelDownload.style.display = isExcel ? 'inline-flex' : 'none';
+            modal.classList.add('is-open');
+            document.body.classList.add('overflow-hidden');
+            closeButton.focus();
+        });
+    });
+
+    closeButton.addEventListener('click', closePreview);
+    cancelButton.addEventListener('click', closePreview);
+
+    modal.addEventListener('click', function (event) {
+        if (event.target === modal) {
+            closePreview();
+        }
+    });
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && modal.classList.contains('is-open')) {
+            closePreview();
         }
     });
 });

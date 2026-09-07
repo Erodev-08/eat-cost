@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Receta;
 use App\Models\RecetaCalc;
 use App\Models\RecetaCalcIngrediente;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+
 class CalculoRecetaController extends Controller
 {
     public function store(Request $request, Receta $receta)
@@ -210,7 +213,52 @@ class CalculoRecetaController extends Controller
             'ingredientes.ingrediente'
         ])->findOrFail($id);
 
-        $total = $recetaElaborada->costo_total;
+        $reportData = $this->buildReportData($recetaElaborada);
+
+        return view(
+            'recetas_elaboradas.show',
+            $reportData
+        );
+    }
+
+    public function document(RecetaCalc $recetaElaborada)
+    {
+        $recetaElaborada->load(['receta', 'ingredientes.ingrediente']);
+
+        $reportData = $this->buildReportData($recetaElaborada);
+
+        $pdf = Pdf::loadView('recetas_elaboradas.document_pdf', $reportData)
+            ->setPaper('A4', 'portrait')
+            ->setOption('defaultFont', 'sans-serif')
+            ->setOption('isRemoteEnabled', true);
+
+        return $pdf->stream('reporte-' . ($recetaElaborada->receta->slug ?? Str::slug($recetaElaborada->receta->nombre_receta ?? 'reporte')) . '.pdf');
+    }
+
+    public function exportExcel(RecetaCalc $recetaElaborada)
+    {
+        $recetaElaborada->load(['receta', 'ingredientes.ingrediente']);
+
+        $filename = Str::slug($recetaElaborada->receta->nombre_receta ?? 'reporte')
+            . '-reporte.xls';
+
+        $html = view('recetas_elaboradas.document_excel', [
+            'recetaElaborada' => $recetaElaborada,
+        ])->render();
+
+        if (request()->boolean('preview')) {
+            return response($html)
+                ->header('Content-Type', 'text/html; charset=UTF-8');
+        }
+
+        return response($html)
+            ->header('Content-Type', 'application/vnd.ms-excel; charset=UTF-8')
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+    }
+
+    private function buildReportData(RecetaCalc $recetaElaborada): array
+    {
+        $total = (float) $recetaElaborada->costo_total;
 
         $porcentajes = [
             'ingredientes' => $total > 0
@@ -230,10 +278,10 @@ class CalculoRecetaController extends Controller
                 : 0,
         ];
 
-        return view(
-            'recetas_elaboradas.show',
-            compact('recetaElaborada', 'porcentajes')
-        );
+        return [
+            'recetaElaborada' => $recetaElaborada,
+            'porcentajes' => $porcentajes,
+        ];
     }
 
     public function create(Receta $receta)

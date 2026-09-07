@@ -1,75 +1,139 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="csrf-token" content="{{ csrf_token() }}">
 
-		<title>{{ config('app.name', 'Laravel') }}</title>
+		<title>{{ config('app.name', 'Eat-Cost | Costeo Culinario') }}</title>
 
+		<!-- Fonts & Icons -->
 		<link rel="preconnect" href="https://fonts.bunny.net">
-		<link href="https://fonts.bunny.net/css?family=figtree:400,500,600;instrument-serif:400,500,700&display=swap" rel="stylesheet" />
+		<link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />
+		<link href="https://cdn.jsdelivr.net/npm/remixicon@4.9.0/fonts/remixicon.css" rel="stylesheet" />
 
+		<!-- Vite Assets -->
 		@vite(['resources/css/app.css', 'resources/js/app.js'])
 	</head>
-	<body class="font-sans antialiased bg-[#f5ede4] text-gray-900">
-		<div class="min-h-screen grid grid-cols-1 lg:grid-cols-2">
-			<section class="hidden lg:flex relative overflow-hidden bg-gradient-to-br from-[#e8864b] via-[#efad73] to-[#88a07a] text-white px-8 py-10 sm:px-12 lg:px-14 flex-col justify-between">
+	<body class="font-sans antialiased bg-gray-50 text-gray-900 min-h-full flex flex-col">
+		
+		<div class="min-h-screen grid grid-cols-1 lg:grid-cols-12 flex-1">
+			
+			{{-- Left Brand Banner (Hidden on Mobile, Visible on Desktop) --}}
+			<section class="hidden lg:flex lg:col-span-5 xl:col-span-5 relative overflow-hidden bg-gradient-to-br from-emerald-700 via-emerald-600 to-teal-800 text-white px-8 py-12 xl:px-12 flex-col justify-between shadow-2xl">
+				
+				{{-- Decorative background glow circles --}}
 				<div class="absolute inset-0 opacity-20 pointer-events-none">
-					<div class="absolute -left-10 top-10 h-40 w-40 rounded-full bg-white/20 blur-3xl"></div>
-					<div class="absolute right-0 top-1/3 h-56 w-56 rounded-full bg-white/10 blur-3xl"></div>
-					<div class="absolute bottom-0 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-black/10 blur-3xl"></div>
+					<div class="absolute -left-12 -top-12 h-64 w-64 rounded-full bg-white/30 blur-3xl"></div>
+					<div class="absolute right-0 top-1/2 h-72 w-72 rounded-full bg-emerald-400/20 blur-3xl"></div>
+					<div class="absolute bottom-0 left-1/3 h-80 w-80 -translate-x-1/2 rounded-full bg-teal-900/40 blur-3xl"></div>
 				</div>
 
-				<div class="relative z-10">
-					<div class="mb-10 flex items-center gap-3">
-						<div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm ring-1 ring-white/20">
-							<svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-								<path d="M7 20h10a2 2 0 0 0 2-2v-4H5v4a2 2 0 0 0 2 2Z" />
-								<path d="M7 14c0-2 1.5-3.5 3.5-3.5h3c2 0 3.5 1.5 3.5 3.5" />
-								<path d="M8 10.5c0-2 1.2-3.7 3-4.5" />
-								<path d="M16 10.5c0-2-1.2-3.7-3-4.5" />
-							</svg>
+				{{-- Brand Header --}}
+				<div class="relative z-10 space-y-8">
+					
+					{{-- Logo --}}
+					<a href="{{ route('home') }}" class="inline-flex items-center gap-3 group">
+						<div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-md ring-1 ring-white/30 shadow-md group-hover:scale-105 transition-transform">
+							<i class="ri-restaurant-line text-2xl text-white"></i>
 						</div>
 						<div>
-							<div class="text-2xl font-bold tracking-tight">CulinFinance</div>
+							<div class="text-2xl font-black tracking-tight flex items-center">
+								<span class="text-white font-black">Eat</span>
+								<span class="text-emerald-300 mx-0.5 font-light">•</span>
+								<span class="text-emerald-200 font-semibold">Cost</span>
+							</div>
+							<p class="text-[10px] uppercase font-bold tracking-widest text-emerald-100/90">Costeo Gastronómico</p>
+						</div>
+					</a>
+
+					{{-- Main Pitch --}}
+					<div class="space-y-3 pt-2">
+						<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 text-emerald-50 text-xs font-bold backdrop-blur-xs">
+							<span class="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span>
+							<span>Ingeniería de Menú & Mermas</span>
+						</div>
+						<h1 class="text-3xl xl:text-4xl font-black leading-tight tracking-tight text-white">
+							Domina tus costos, protege el margen de tu cocina.
+						</h1>
+						<p class="text-xs xl:text-sm leading-relaxed text-emerald-50 font-medium">
+							Calcula mermas reales, costos unitarios por porción y precios de venta sugeridos en segundos para chefs, reposteros y restaurantes.
+						</p>
+					</div>
+
+					{{-- Feature Highlights --}}
+					<div class="grid gap-3 pt-2">
+						<div class="rounded-2xl border border-white/20 bg-white/10 p-4 backdrop-blur-md flex items-start gap-3.5 shadow-sm">
+							<div class="w-9 h-9 rounded-xl bg-white/20 text-white flex items-center justify-center text-lg shrink-0">
+								<i class="ri-scales-3-line"></i>
+							</div>
+							<div>
+								<h3 class="text-xs font-bold text-white">Cálculo de Mermas Reales</h3>
+								<p class="text-[11px] text-emerald-100 mt-0.5 leading-normal">
+									Aplica el factor de merma por limpieza y cocción a cada gramo de materia prima.
+								</p>
+							</div>
+						</div>
+
+						<div class="rounded-2xl border border-white/20 bg-white/10 p-4 backdrop-blur-md flex items-start gap-3.5 shadow-sm">
+							<div class="w-9 h-9 rounded-xl bg-white/20 text-white flex items-center justify-center text-lg shrink-0">
+								<i class="ri-pie-chart-2-line"></i>
+							</div>
+							<div>
+								<h3 class="text-xs font-bold text-white">Márgenes y Precio Sugerido</h3>
+								<p class="text-[11px] text-emerald-100 mt-0.5 leading-normal">
+									Visualiza el costo por porción y asegura tu ganancia con precios objetivos.
+								</p>
+							</div>
 						</div>
 					</div>
 
-					<h1 class="max-w-xl font-serif text-5xl leading-[1.05] font-bold tracking-tight sm:text-6xl">
-						Domina tus finanzas, cocina tu éxito
-					</h1>
-					<p class="mt-6 max-w-lg text-base leading-7 text-white/90 sm:text-lg">
-						La plataforma educativa diseñada para estudiantes de artes culinarias que quieren fortalecer sus competencias financieras.
-					</p>
-
-					<div class="mt-12 grid gap-4 sm:grid-cols-2">
-						<article class="rounded-2xl border border-white/20 bg-white/12 p-5 backdrop-blur-sm shadow-[0_20px_60px_rgba(0,0,0,0.08)]">
-							<div class="mb-4 text-2xl">↗</div>
-							<h2 class="text-lg font-semibold">Aprende finanzas</h2>
-							<p class="mt-2 text-sm leading-6 text-white/85">Conceptos aplicados al mundo culinario</p>
-						</article>
-						<article class="rounded-2xl border border-white/20 bg-white/12 p-5 backdrop-blur-sm shadow-[0_20px_60px_rgba(0,0,0,0.08)]">
-							<div class="mb-4 text-2xl">⌘</div>
-							<h2 class="text-lg font-semibold">Herramientas prácticas</h2>
-							<p class="mt-2 text-sm leading-6 text-white/85">Calcula costos, márgenes y presupuestos</p>
-						</article>
-					</div>
 				</div>
 
-				<div class="relative z-10 mt-10 flex justify-end">
-					<div class="flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm text-white/85 backdrop-blur-sm">
-						<span class="h-2 w-2 rounded-full bg-white"></span>
-						Control simple, resultados claros
-					</div>
+				{{-- Bottom Trust Bar --}}
+				<div class="relative z-10 pt-6 flex items-center justify-between border-t border-white/15 text-xs text-emerald-100 font-medium">
+					<span>© {{ date('Y') }} Eat-Cost</span>
+					<span class="inline-flex items-center gap-1.5">
+						<i class="ri-shield-check-fill text-emerald-300"></i> Seguro & Confiable
+					</span>
 				</div>
+
 			</section>
 
-			<section class="flex items-center justify-center px-6 py-10 sm:px-10 lg:px-16 bg-[#f7f0e7]">
-				<div class="w-full max-w-[30rem] rounded-[2rem] border border-white/70 bg-white/90 p-6 sm:p-8 shadow-[0_30px_80px_rgba(158,112,68,0.12)] backdrop-blur">
+			{{-- Right Form Container --}}
+			<section class="col-span-1 lg:col-span-7 xl:col-span-7 flex flex-col items-center justify-center px-4 py-10 sm:px-8 lg:px-12 xl:px-16 bg-gray-50/70">
+				
+				{{-- Mobile Brand Logo Header --}}
+				<div class="lg:hidden mb-6 text-center">
+					<a href="{{ route('home') }}" class="inline-flex items-center gap-2.5">
+						<div class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-md">
+							<i class="ri-restaurant-line text-xl"></i>
+						</div>
+						<div class="text-left">
+							<div class="text-xl font-black tracking-tight text-gray-900">
+								<span class="text-emerald-700">Eat</span><span class="text-gray-300 mx-0.5 font-light">•</span><span class="text-emerald-500">Cost</span>
+							</div>
+							<p class="text-[9px] uppercase font-bold tracking-wider text-gray-500">Costeo Gastronómico</p>
+						</div>
+					</a>
+				</div>
+
+				{{-- Form Card --}}
+				<div class="w-full max-w-md bg-white rounded-3xl border border-gray-200/90 p-6 sm:p-8 shadow-xl shadow-gray-200/50">
 					{{ $slot }}
 				</div>
+
+				{{-- Back to Home link --}}
+				<div class="mt-6 text-center">
+					<a href="{{ route('home') }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-emerald-700 transition-colors">
+						<i class="ri-arrow-left-line"></i>
+						Volver a la página principal
+					</a>
+				</div>
+
 			</section>
+
 		</div>
+
 	</body>
 </html>

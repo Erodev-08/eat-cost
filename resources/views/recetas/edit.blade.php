@@ -18,282 +18,285 @@
 
     <div class="py-10">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="flex items-center">
+            <div class="flex items-center justify-between">
                 <div class="mb-8">
-                    <h1 class="text-4xl font-bold text-blue-900 mb-3 mt-3">
+                    <h1 class="text-4xl font-extrabold text-gray-900 mb-2 mt-3 tracking-tight">
                         Editar receta
+                        <span class="block h-1.5 w-16 bg-emerald-500 rounded-full mt-2"></span>
                     </h1>
-                    <div class="flex flex-wrap gap-3">
-                        <a href="{{ route('recetas.show', $receta) }}" class="border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-gray-100 rounded-lg md:py-2 md:px-3 px-3 py-3">
-                            Volver
-                        </a>
-                        <a href="{{ route('recetas') }}" class="border border-gray-300 text-gray-600 hover:bg-gray-100 rounded-lg md:py-2 md:px-3 px-3 py-3">
-                            Lista de recetas
-                        </a>
-                    </div>
+                </div>
+                <div class="mb-8 flex flex-wrap gap-3 mt-3">
+                    <a href="{{ route('recetas.show', $receta) }}" class="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 font-medium rounded-xl py-2.5 px-4 shadow-sm transition-all">
+                        <i class="ri-eye-line text-lg"></i>
+                        <span>Ver receta</span>
+                    </a>
+                    <a href="{{ route('recetas') }}" class="inline-flex items-center gap-2 bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 font-medium rounded-xl py-2.5 px-4 shadow-sm transition-all">
+                        <i class="ri-list-unordered text-lg"></i>
+                        <span>Lista de recetas</span>
+                    </a>
                 </div>
             </div>
-            <hr class="mb-5">
+            <hr class="mb-5 border-gray-200 border-dashed">
         </div>
     </div>
 
     <div class="px-5 py-3 md:px-5 md:py-4">
-        <div class="mx-auto max-w-7xl p-10">
+        <div class="mx-auto max-w-7xl">
             <form action="{{ route('recetas.update', $receta) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
-                <div class="flex flex-col md:flex-row bg-white rounded-lg shadow-lg overflow-hidden">
-                    <div class="w-full md:w-1/2 bg-gradient-to-br from-[#e8864b] via-[#efad73] to-[#88a07a] flex">
-                        <div class="w-full p-5 justify-center items-center">
-                            <div class="mb-5 mx-auto max-w-lg">
-                                <h2 class="text-2xl font-bold text-gray-100">
+                <div class="flex flex-col md:flex-row bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="w-full md:w-1/2 bg-gray-50 border-r border-gray-100 flex">
+                        <div class="w-full p-8 md:p-10 justify-center items-center">
+                            <div class="mb-8 mx-auto max-w-lg">
+                                <h2 class="text-2xl font-bold text-gray-900">
                                     Datos de la receta
                                 </h2>
+                                <p class="text-sm text-gray-500 mt-1">
+                                    Actualiza la información básica y la imagen de tu receta.
+                                </p>
                             </div>
 
-                            <div class="mb-3 max-w-lg mx-auto">
-                                <label for="nombre_receta" class="block text-xs font-semibold text-gray-100 mb-1.5 uppercase tracking-wide">Nombre</label>
+                            <div class="mb-5 max-w-lg mx-auto">
+                                <label for="nombre_receta" class="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wide">Nombre</label>
                                 <input
                                     type="text"
                                     name="nombre_receta"
                                     id="nombre_receta"
                                     value="{{ old('nombre_receta', $receta->nombre_receta) }}"
                                     required
-                                    class="w-full pr-4 py-3 rounded-lg border border-gray-600 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                                    class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white shadow-sm transition-all">
                                 @error('nombre_receta')
-                                    <p class="text-xs text-red-100 mt-1">{{ $message }}</p>
+                                    <p class="text-xs text-red-500 mt-1.5 font-medium">{{ $message }}</p>
                                 @enderror
                             </div>
 
-                            <div class="mb-3 max-w-lg mx-auto">
-                                <label for="descripcion" class="block text-xs font-semibold text-gray-100 mb-1.5 uppercase tracking-wide">Descripcion</label>
-                                <textarea name="descripcion" id="descripcion" class="w-full pr-4 py-2 rounded-lg border border-gray-600 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent" style="height: 8rem">{{ old('descripcion', $receta->descripcion) }}</textarea>
+                            <div class="mb-5 max-w-lg mx-auto">
+                                <label for="descripcion" class="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wide">Descripción</label>
+                                <textarea name="descripcion" id="descripcion" class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white shadow-sm transition-all" style="height: 6rem">{{ old('descripcion', $receta->descripcion) }}</textarea>
                                 @error('descripcion')
-                                    <p class="text-xs text-red-100 mt-1">{{ $message }}</p>
+                                    <p class="text-xs text-red-500 mt-1.5 font-medium">{{ $message }}</p>
                                 @enderror
                             </div>
 
-                            <div class="mb-3 max-w-lg mx-auto">
-
-                            {{-- Cantidad de porciones --}}
-                            <div>
-                                <label for="cantidad_porciones" class="block text-xs font-semibold text-gray-100 mb-1.5 uppercase tracking-wide">
-                                    Cantidad de porciones
-                                </label>
-
-                                <input
-                                    type="number"
-                                    name="cantidad_porciones"
-                                    min="1"
-                                    value="{{ old('cantidad_porciones', $receta->cantidad_porciones) }}"
-                                    class="w-full border border-gray-300 rounded-lg px-4 py-2"
-                                    required>
+                            <div class="grid grid-cols-2 gap-4 mb-5 max-w-lg mx-auto">
+                                <div>
+                                    <label for="cantidad_porciones" class="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wide">
+                                        Cantidad de porciones
+                                    </label>
+                                    <input
+                                        type="number"
+                                        name="cantidad_porciones"
+                                        min="1"
+                                        value="{{ old('cantidad_porciones', $receta->cantidad_porciones) }}"
+                                        class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white shadow-sm transition-all"
+                                        required>
+                                </div>
+                                <div>
+                                    <label for="tipo_porcion" class="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wide">
+                                        Tipo de porción
+                                    </label>
+                                    <select
+                                        name="tipo_porcion"
+                                        class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white shadow-sm transition-all appearance-none"
+                                        required>
+                                        <option value="">Selecciona una opción</option>
+                                        <option value="platillos" {{ old('tipo_porcion', $receta->tipo_porcion) == 'platillos' ? 'selected' : '' }}>Platillos</option>
+                                        <option value="vasos" {{ old('tipo_porcion', $receta->tipo_porcion) == 'vasos' ? 'selected' : '' }}>Vasos</option>
+                                        <option value="rebanadas" {{ old('tipo_porcion', $receta->tipo_porcion) == 'rebanadas' ? 'selected' : '' }}>Rebanadas</option>
+                                        <option value="piezas" {{ old('tipo_porcion', $receta->tipo_porcion) == 'piezas' ? 'selected' : '' }}>Piezas</option>
+                                        <option value="porciones" {{ old('tipo_porcion', $receta->tipo_porcion) == 'porciones' ? 'selected' : '' }}>Porciones</option>
+                                    </select>
+                                </div>
                             </div>
 
-                            {{-- Tipo de porción --}}
-                            <div>
-                                <label for="tipo_porcion" class="block text-xs font-semibold text-gray-100 mb-1.5 uppercase tracking-wide">
-                                    Tipo de porción
-                                </label>
-
-                                <select
-                                    name="tipo_porcion"
-                                    class="w-full border border-gray-300 rounded-lg px-4 py-2"
-                                    required>
-
-                                    <option value="">Selecciona una opción</option>
-
-                                    <option value="platillos"
-                                        {{ old('tipo_porcion', $receta->tipo_porcion) == 'platillos' ? 'selected' : '' }}>
-                                        Platillos
-                                    </option>
-
-                                    <option value="vasos"
-                                        {{ old('tipo_porcion', $receta->tipo_porcion) == 'vasos' ? 'selected' : '' }}>
-                                        Vasos
-                                    </option>
-
-                                    <option value="rebanadas"
-                                        {{ old('tipo_porcion', $receta->tipo_porcion) == 'rebanadas' ? 'selected' : '' }}>
-                                        Rebanadas
-                                    </option>
-
-                                    <option value="piezas"
-                                        {{ old('tipo_porcion', $receta->tipo_porcion) == 'piezas' ? 'selected' : '' }}>
-                                        Piezas
-                                    </option>
-
-                                    <option value="porciones"
-                                        {{ old('tipo_porcion', $receta->tipo_porcion) == 'porciones' ? 'selected' : '' }}>
-                                        Porciones
-                                    </option>
-
-                                </select>
-                            </div>
-                        </div>
-
-                            <div class="mb-3 max-w-lg mx-auto">
-                                <label for="procedimiento" class="block text-xs font-semibold text-gray-100 mb-1.5 uppercase tracking-wide">Procedimiento</label>
-                                <textarea name="procedimiento" id="procedimiento" class="w-full pr-4 py-2 rounded-lg border border-gray-600 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent" style="height: 8rem">{{ old('procedimiento', $receta->procedimiento) }}</textarea>
+                            <div class="mb-6 max-w-lg mx-auto">
+                                <label for="procedimiento" class="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wide">Procedimiento</label>
+                                <textarea name="procedimiento" id="procedimiento" class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white shadow-sm transition-all" style="height: 7rem">{{ old('procedimiento', $receta->procedimiento) }}</textarea>
                                 @error('procedimiento')
-                                    <p class="text-xs text-red-100 mt-1">{{ $message }}</p>
+                                    <p class="text-xs text-red-500 mt-1.5 font-medium">{{ $message }}</p>
                                 @enderror
                             </div>
 
-                            <div id="previewContainer" class="aspect-video max-w-lg mx-auto w-full overflow-hidden rounded-md border-2 border-dashed border-gray-100 flex items-center justify-center mb-5 cursor-pointer"
+                            <div class="mb-2 max-w-lg mx-auto">
+                                <label class="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wide">Imagen de la receta</label>
+                            </div>
+                            <div id="previewContainer" class="aspect-video max-w-lg mx-auto w-full overflow-hidden rounded-xl border-2 border-dashed border-gray-300 hover:border-emerald-400 hover:bg-emerald-50/50 transition-all flex items-center justify-center mb-5 cursor-pointer bg-white"
                                 onclick="document.getElementById('fileInput').click()">
                                 @if ($receta->imagen)
                                     <img src="{{ asset('storage/' . $receta->imagen) }}" class="w-full h-full object-cover rounded-md" alt="imagen receta">
                                 @else
                                     <div class="text-center">
-                                        <i class="ri-upload-cloud-line text-6xl text-gray-200 mb-2"></i>
-                                        <p class="text-gray-200 text-sm">Sin imagen de receta</p>
+                                        <div class="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-3">
+                                            <i class="ri-image-add-line text-2xl text-emerald-600"></i>
+                                        </div>
+                                        <p class="text-gray-600 font-medium text-sm">Clic para cambiar imagen</p>
+                                        <p class="text-xs text-gray-400 mt-1">PNG, JPG, JPEG (Max. 2MB)</p>
                                     </div>
                                 @endif
                             </div>
                             <input type="file" class="hidden" name="imagen" id="fileInput" accept="image/*" onchange="mostrarNombreArchivo(event)">
                             <div id="elementoArchivo" class="mb-5 hidden max-w-lg mx-auto">
-                                <div class="bg-teal-300 p-3 rounded-md max-w-lg flex justify-between items-center gap-2">
-                                    <p id="nombreArchivo" class="text-center text-sm text-gray-600"></p>
-                                    <a href="#" id="closeElemento" class="hover:bg-teal-400 hover:text-gray-100 p-3 rounded-lg">
-                                        <i class="ri-close-line"></i>
-                                    </a>
+                                <div class="bg-emerald-50 border border-emerald-100 p-3 rounded-xl max-w-lg flex justify-between items-center gap-2">
+                                    <div class="flex items-center gap-2 overflow-hidden">
+                                        <i class="ri-checkbox-circle-fill text-emerald-500 text-lg"></i>
+                                        <p id="nombreArchivo" class="text-sm font-medium text-emerald-800 truncate"></p>
+                                    </div>
+                                    <button type="button" id="closeElemento" class="text-emerald-600 hover:text-emerald-800 hover:bg-emerald-100 p-1.5 rounded-lg transition-colors" onclick="document.getElementById('fileInput').value = ''; document.getElementById('elementoArchivo').classList.add('hidden'); document.getElementById('previewContainer').innerHTML = '@if($receta->imagen) <img src=\'{{ asset('storage/' . $receta->imagen) }}\' class=\'w-full h-full object-cover rounded-md\'> @else <div class=\'text-center\'><div class=\'w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-3\'><i class=\'ri-image-add-line text-2xl text-emerald-600\'></i></div><p class=\'text-gray-600 font-medium text-sm\'>Clic para cambiar imagen</p><p class=\'text-xs text-gray-400 mt-1\'>PNG, JPG, JPEG (Max. 2MB)</p></div> @endif';">
+                                        <i class="ri-close-line text-lg"></i>
+                                    </button>
                                 </div>
                             </div>
                             @error('imagen')
-                                <p class="text-xs text-red-100 mt-1 max-w-lg mx-auto">{{ $message }}</p>
+                                <p class="text-xs text-red-500 mt-1.5 font-medium max-w-lg mx-auto">{{ $message }}</p>
                             @enderror
                         </div>
                     </div>
 
-                    <div class="w-full md:w-1/2">
-                        <div class="max-w-xl p-5 mx-auto flex flex-col" style="height: 650px; overflow: hidden;">
+                    <div class="w-full md:w-1/2 flex flex-col bg-white">
+                        <div class="p-8 md:p-10 flex flex-col h-full">
 
-                        <div class="mb-5 shrink-0">
-                            <h2 class="text-2xl font-bold text-gray-900">
-                                Actualizar receta
-                            </h2>
-                            <p class="text-sm text-gray-500 mt-1">
-                                Edita los ingredientes actuales o agrega nuevos ingredientes a la receta.
-                            </p>
-                        </div>
+                            <div class="mb-8 shrink-0">
+                                <h2 class="text-2xl font-bold text-gray-900">
+                                    Actualizar receta
+                                </h2>
+                                <p class="text-sm text-gray-500 mt-1">
+                                    Edita los ingredientes actuales o agrega nuevos ingredientes a la receta.
+                                </p>
+                            </div>
 
-                        
-                        {{-- ÁREA SCROLLEABLE --}}
-                        <div class="pr-2" style="height: 500px; overflow-y: auto;">
+                            {{-- ÁREA SCROLLEABLE --}}
+                            <div class="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-6" style="min-height: 400px; max-height: 600px;">
 
-                            <div class="mb-6">
-                                <h3 class="font-bold mb-3 text-gray-800">
-                                    Ingredientes de la receta
-                                </h3>
+                                <div class="mb-6">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <h3 class="font-bold text-gray-800">
+                                            Ingredientes de la receta
+                                        </h3>
+                                        <button
+                                            type="button"
+                                            onclick="agregarIngrediente()"
+                                            class="bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition-colors flex items-center gap-1.5">
+                                            <i class="ri-add-line"></i>
+                                            Añadir
+                                        </button>
+                                    </div>
 
-                                <div id="listaIngredientes" class="space-y-3">
-                                    @if ($receta->ingredientes->count())
-                                        @foreach ($receta->ingredientes as $i => $ingrediente)
-                                            <div class="border rounded-lg p-3 shadow-sm bg-gray-50">
-                                                <p class="text-sm font-semibold mb-2 text-gray-700">
-                                                    Ingrediente {{ $i + 1 }}
-                                                </p>
+                                    <div id="listaIngredientes" class="space-y-4">
+                                        @if ($receta->ingredientes->count())
+                                            @foreach ($receta->ingredientes as $i => $ingrediente)
+                                                <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+                                                    <p class="text-sm font-bold mb-3 text-emerald-800 flex items-center gap-2">
+                                                        <i class="ri-restaurant-line"></i>
+                                                        Ingrediente {{ $i + 1 }}
+                                                    </p>
 
-                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                                    <input
-                                                        type="text"
-                                                        name="ingredientes[{{ $i }}][nombre]"
-                                                        value="{{ old("ingredientes.$i.nombre", $ingrediente->nombre) }}"
-                                                        placeholder="Nombre"
-                                                        class="border border-gray-400 p-2 rounded-lg text-sm"
-                                                        required>
+                                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                        <div class="md:col-span-2">
+                                                            <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wide mb-1">Nombre</label>
+                                                            <input
+                                                                type="text"
+                                                                name="ingredientes[{{ $i }}][nombre]"
+                                                                value="{{ old("ingredientes.$i.nombre", $ingrediente->nombre) }}"
+                                                                placeholder="Nombre del ingrediente"
+                                                                class="w-full border border-gray-200 p-2.5 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                                                required>
+                                                        </div>
 
-                                                    <input
-                                                        type="number"
-                                                        step="0.01"
-                                                        min="0.01"
-                                                        name="ingredientes[{{ $i }}][cantidad]"
-                                                        value="{{ old("ingredientes.$i.cantidad", $ingrediente->pivot->cantidad) }}"
-                                                        placeholder="Cantidad usada"
-                                                        class="border border-gray-400 p-2 rounded-lg text-sm"
-                                                        required>
+                                                        <div>
+                                                            <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wide mb-1">Unidad</label>
+                                                            <select
+                                                                name="ingredientes[{{ $i }}][unidad_medida]"
+                                                                class="unidad-medida w-full border border-gray-200 p-2.5 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white"
+                                                                required>
+                                                                <option value="">Selecciona unidad</option>
+                                                                @foreach (['gr', 'kg', 'ml', 'l', 'pza'] as $unidad)
+                                                                    <option value="{{ $unidad }}"
+                                                                        @selected(old("ingredientes.$i.unidad_medida", $ingrediente->pivot->unidad_medida) == $unidad)>
+                                                                        {{ $unidad }}
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
 
-                                                    <select
-                                                        name="ingredientes[{{ $i }}][unidad_medida]"
-                                                        class="border border-gray-400 p-2 rounded-lg text-sm"
-                                                        required>
-                                                        <option value="">Unidad usada</option>
-                                                        @foreach (['gr', 'kg', 'ml', 'l', 'pza'] as $unidad)
-                                                            <option value="{{ $unidad }}"
-                                                                @selected(old("ingredientes.$i.unidad_medida", $ingrediente->pivot->unidad_medida) == $unidad)>
-                                                                {{ $unidad }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
+                                                        <div>
+                                                            <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wide mb-1">Cantidad</label>
+                                                            <input
+                                                                type="number"
+                                                                step="0.01"
+                                                                min="0.01"
+                                                                name="ingredientes[{{ $i }}][cantidad]"
+                                                                value="{{ old("ingredientes.$i.cantidad", $ingrediente->pivot->cantidad) }}"
+                                                                placeholder="Ej. 250"
+                                                                class="w-full border border-gray-200 p-2.5 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                                                required>
+                                                        </div>
 
-                                                    <input
-                                                        type="number"
-                                                        step="0.01"
-                                                        min="0.01"
-                                                        name="ingredientes[{{ $i }}][presentacion_cantidad]"
-                                                        value="{{ old("ingredientes.$i.presentacion_cantidad", $ingrediente->presentacion_cantidad) }}"
-                                                        placeholder="Presentación cantidad"
-                                                        class="border border-gray-400 p-2 rounded-lg text-sm"
-                                                        required>
+                                                        <div>
+                                                            <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wide mb-1">Unidad presentación</label>
+                                                            <select
+                                                                class="presentacion-unidad w-full border border-gray-200 p-2.5 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white"
+                                                                data-auto-sync="true"
+                                                                disabled
+                                                                required>
+                                                                @foreach (['gr', 'kg', 'ml', 'l', 'pza'] as $unidad)
+                                                                    <option value="{{ $unidad }}"
+                                                                        @selected(old("ingredientes.$i.unidad_medida", $ingrediente->pivot->unidad_medida) == $unidad)>
+                                                                        {{ $unidad }}
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                            <input
+                                                                type="hidden"
+                                                                name="ingredientes[{{ $i }}][presentacion_unidad]"
+                                                                value="{{ old("ingredientes.$i.unidad_medida", $ingrediente->pivot->unidad_medida) }}"
+                                                                class="presentacion-unidad-hidden">
+                                                        </div>
 
-                                                    <select
-                                                        name="ingredientes[{{ $i }}][presentacion_unidad]"
-                                                        class="border border-gray-400 p-2 rounded-lg text-sm"
-                                                        required>
-                                                        <option value="">Unidad presentación</option>
-                                                        @foreach (['gr', 'kg', 'ml', 'l', 'pza'] as $unidad)
-                                                            <option value="{{ $unidad }}"
-                                                                @selected(old("ingredientes.$i.presentacion_unidad", $ingrediente->presentacion_unidad) == $unidad)>
-                                                                {{ $unidad }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
+                                                        <div>
+                                                            <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wide mb-1">Cantidad presentación</label>
+                                                            <input
+                                                                type="number"
+                                                                step="0.01"
+                                                                min="0.01"
+                                                                name="ingredientes[{{ $i }}][presentacion_cantidad]"
+                                                                value="{{ old("ingredientes.$i.presentacion_cantidad", $ingrediente->presentacion_cantidad) }}"
+                                                                placeholder="Ej. 1"
+                                                                class="w-full border border-gray-200 p-2.5 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                                                required>
+                                                        </div>
 
-                                                    <input
-                                                        type="number"
-                                                        step="0.01"
-                                                        min="0.01"
-                                                        name="ingredientes[{{ $i }}][costo_presentacion]"
-                                                        value="{{ old("ingredientes.$i.costo_presentacion", $ingrediente->costo_presentacion) }}"
-                                                        placeholder="Costo presentación"
-                                                        class="border border-gray-400 p-2 rounded-lg text-sm"
-                                                        required>
+                                                    </div>
                                                 </div>
+                                            @endforeach
+                                        @else
+                                            <div class="bg-gray-50 border border-gray-100 rounded-xl p-6 text-center">
+                                                <i class="ri-list-check text-3xl text-gray-300 mb-2"></i>
+                                                <p class="text-sm text-gray-500">
+                                                    No hay ingredientes registrados.
+                                                </p>
                                             </div>
-                                        @endforeach
-                                    @else
-                                        <p class="text-sm text-gray-500">
-                                            No hay ingredientes registrados.
-                                        </p>
-                                    @endif
+                                        @endif
+                                    </div>
                                 </div>
+                            </div>
 
+                            {{-- BOTÓN GUARDAR FIJO ABAJO --}}
+                            <div class="pt-6 border-t border-gray-100 shrink-0 mt-6">
                                 <button
-                                    type="button"
-                                    onclick="agregarIngrediente()"
-                                    class="mt-4 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg text-sm">
-                                    Añadir ingrediente
+                                    type="submit"
+                                    class="w-full flex items-center justify-center gap-2 bg-emerald-600 text-white px-6 py-3.5 rounded-xl font-semibold shadow-sm hover:bg-emerald-700 transition-all hover:-translate-y-0.5">
+                                    <i class="ri-save-line text-lg"></i>
+                                    Guardar cambios
                                 </button>
                             </div>
 
                         </div>
-
-                        {{-- BOTÓN GUARDAR FIJO ABAJO --}}
-                        <div class="mt-5 pt-4 border-t shrink-0">
-                            <button
-                                type="submit"
-                                class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600">
-                                Guardar cambios
-                            </button>
-                        </div>
-
                     </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
-</div>
 
     <script>
     function mostrarNombreArchivo(event) {
@@ -332,73 +335,85 @@
 
     function plantillaIngrediente(indice, ingrediente = {}) {
         return `
-            <div class="border rounded-lg p-3 shadow-sm mb-2 bg-gray-50">
-                <p class="text-sm font-semibold mb-2 text-gray-700">
+            <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm mb-3">
+                <p class="text-sm font-bold mb-3 text-emerald-800 flex items-center gap-2">
+                    <i class="ri-restaurant-line"></i>
                     Ingrediente nuevo ${indice + 1}
                 </p>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    <input
-                        type="text"
-                        name="ingredientes[${indice}][nombre]"
-                        value="${escapeHtml(ingrediente.nombre)}"
-                        placeholder="Nombre"
-                        class="border border-gray-400 p-2 rounded-lg text-sm"
-                        required>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div class="md:col-span-2">
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wide mb-1">Nombre</label>
+                        <input
+                            type="text"
+                            name="ingredientes[${indice}][nombre]"
+                            value="${escapeHtml(ingrediente.nombre)}"
+                            placeholder="Nombre del ingrediente"
+                            class="w-full border border-gray-200 p-2.5 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                            required>
+                    </div>
 
-                    <input
-                        type="number"
-                        step="0.01"
-                        min="0.01"
-                        name="ingredientes[${indice}][cantidad]"
-                        value="${escapeHtml(ingrediente.cantidad)}"
-                        placeholder="Cantidad usada"
-                        class="border border-gray-400 p-2 rounded-lg text-sm"
-                        required>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wide mb-1">Unidad</label>
+                        <select
+                            name="ingredientes[${indice}][unidad_medida]"
+                            class="unidad-medida w-full border border-gray-200 p-2.5 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white"
+                            required>
+                            <option value="" ${!ingrediente.unidad_medida ? 'selected' : ''}>Selecciona unidad</option>
+                            <option value="gr" ${ingrediente.unidad_medida === 'gr' ? 'selected' : ''}>gr</option>
+                            <option value="kg" ${ingrediente.unidad_medida === 'kg' ? 'selected' : ''}>kg</option>
+                            <option value="ml" ${ingrediente.unidad_medida === 'ml' ? 'selected' : ''}>ml</option>
+                            <option value="l" ${ingrediente.unidad_medida === 'l' ? 'selected' : ''}>l</option>
+                            <option value="pza" ${ingrediente.unidad_medida === 'pza' ? 'selected' : ''}>pza</option>
+                        </select>
+                    </div>
 
-                    <select
-                        name="ingredientes[${indice}][unidad_medida]"
-                        class="border border-gray-400 p-2 rounded-lg text-sm"
-                        required>
-                        <option value="" ${!ingrediente.unidad_medida ? 'selected' : ''}>Unidad usada</option>
-                        <option value="gr" ${ingrediente.unidad_medida === 'gr' ? 'selected' : ''}>gr</option>
-                        <option value="kg" ${ingrediente.unidad_medida === 'kg' ? 'selected' : ''}>kg</option>
-                        <option value="ml" ${ingrediente.unidad_medida === 'ml' ? 'selected' : ''}>ml</option>
-                        <option value="l" ${ingrediente.unidad_medida === 'l' ? 'selected' : ''}>l</option>
-                        <option value="pza" ${ingrediente.unidad_medida === 'pza' ? 'selected' : ''}>pza</option>
-                    </select>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wide mb-1">Cantidad</label>
+                        <input
+                            type="number"
+                            step="0.01"
+                            min="0.01"
+                            name="ingredientes[${indice}][cantidad]"
+                            value="${escapeHtml(ingrediente.cantidad)}"
+                            placeholder="Ej. 250"
+                            class="w-full border border-gray-200 p-2.5 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                            required>
+                    </div>
 
-                    <input
-                        type="number"
-                        step="0.01"
-                        min="0.01"
-                        name="ingredientes[${indice}][presentacion_cantidad]"
-                        value="${escapeHtml(ingrediente.presentacion_cantidad)}"
-                        placeholder="Presentación cantidad"
-                        class="border border-gray-400 p-2 rounded-lg text-sm"
-                        required>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wide mb-1">Unidad presentación</label>
+                        <select
+                            class="presentacion-unidad w-full border border-gray-200 p-2.5 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white"
+                            data-auto-sync="true"
+                            disabled
+                            required>
+                            <option value="gr" ${ingrediente.unidad_medida === 'gr' ? 'selected' : ''}>gr</option>
+                            <option value="kg" ${ingrediente.unidad_medida === 'kg' ? 'selected' : ''}>kg</option>
+                            <option value="ml" ${ingrediente.unidad_medida === 'ml' ? 'selected' : ''}>ml</option>
+                            <option value="l" ${ingrediente.unidad_medida === 'l' ? 'selected' : ''}>l</option>
+                            <option value="pza" ${ingrediente.unidad_medida === 'pza' ? 'selected' : ''}>pza</option>
+                        </select>
+                        <input
+                            type="hidden"
+                            name="ingredientes[${indice}][presentacion_unidad]"
+                            value="${escapeHtml(ingrediente.unidad_medida)}"
+                            class="presentacion-unidad-hidden">
+                    </div>
 
-                    <select
-                        name="ingredientes[${indice}][presentacion_unidad]"
-                        class="border border-gray-400 p-2 rounded-lg text-sm"
-                        required>
-                        <option value="" ${!ingrediente.presentacion_unidad ? 'selected' : ''}>Unidad presentación</option>
-                        <option value="gr" ${ingrediente.presentacion_unidad === 'gr' ? 'selected' : ''}>gr</option>
-                        <option value="kg" ${ingrediente.presentacion_unidad === 'kg' ? 'selected' : ''}>kg</option>
-                        <option value="ml" ${ingrediente.presentacion_unidad === 'ml' ? 'selected' : ''}>ml</option>
-                        <option value="l" ${ingrediente.presentacion_unidad === 'l' ? 'selected' : ''}>l</option>
-                        <option value="pza" ${ingrediente.presentacion_unidad === 'pza' ? 'selected' : ''}>pza</option>
-                    </select>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wide mb-1">Cantidad presentación</label>
+                        <input
+                            type="number"
+                            step="0.01"
+                            min="0.01"
+                            name="ingredientes[${indice}][presentacion_cantidad]"
+                            value="${escapeHtml(ingrediente.presentacion_cantidad)}"
+                            placeholder="Ej. 1"
+                            class="w-full border border-gray-200 p-2.5 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                            required>
+                    </div>
 
-                    <input
-                        type="number"
-                        step="0.01"
-                        min="0.01"
-                        name="ingredientes[${indice}][costo_presentacion]"
-                        value="${escapeHtml(ingrediente.costo_presentacion)}"
-                        placeholder="Costo presentación"
-                        class="border border-gray-400 p-2 rounded-lg text-sm"
-                        required>
                 </div>
             </div>
         `;
@@ -409,5 +424,21 @@
         contenedor.insertAdjacentHTML('beforeend', plantillaIngrediente(contadorIngredientes, ingrediente));
         contadorIngredientes += 1;
     }
+
+    document.addEventListener('change', function (event) {
+        const target = event.target;
+
+        if (target.classList.contains('unidad-medida')) {
+            const contenedor = target.closest('.bg-white.border');
+            if (!contenedor) return;
+
+            const presentacion = contenedor.querySelector('.presentacion-unidad');
+            const presentacionHidden = contenedor.querySelector('.presentacion-unidad-hidden');
+            if (presentacion && presentacionHidden) {
+                presentacion.value = target.value;
+                presentacionHidden.value = target.value;
+            }
+        }
+    });
 </script>
 @endsection

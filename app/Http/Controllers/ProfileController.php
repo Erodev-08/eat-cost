@@ -18,17 +18,21 @@ class ProfileController extends Controller
      */
     public function user(): View
     {
-        // return view('profile.user');
         $user = Auth::user();
         $profile = $user->profile;
+        $recetasCount = \App\Models\Receta::where('id_usuario', $user->id_usuario)->count();
+        $calculosCount = \App\Models\RecetaCalc::whereHas('receta', function ($query) use ($user) {
+            $query->where('id_usuario', $user->id_usuario);
+        })->count();
         
-        return view('profile.user', compact('user', 'profile'));
+        return view('profile.user', compact('user', 'profile', 'recetasCount', 'calculosCount'));
     }
     
     public function edit(Request $request): View
     {
         return view('profile.edit', [
             'user' => $request->user(),
+            'profile' => $request->user()->profile,
         ]);
     }
 
@@ -48,6 +52,7 @@ class ProfileController extends Controller
                 \Illuminate\Validation\Rule::unique('users', 'email')
                     ->ignore($user->id_usuario, 'id_usuario')
             ],
+            'institution' => 'nullable|string|max:150',
             'profile_image' => 'nullable|image|max:2048',
             'cover_image' => 'nullable|image|max:5120',
         ]);
@@ -56,6 +61,8 @@ class ProfileController extends Controller
         $user->update([
             'nombre' => $request->name,
             'email' => $request->email,
+            'email_verified_at' => $request->email === $user->email ? $user->email_verified_at : null,
+            'institution' => $request->institution ?? $user->institution,
         ]);
 
         // OBTENER O CREAR PROFILE
@@ -90,7 +97,7 @@ class ProfileController extends Controller
 
         $profile->save();
 
-        return back()->with('status', 'profile-updated');
+        return Redirect::route('profile')->with('status', 'profile-updated');
     }
 
     /**
@@ -103,10 +110,12 @@ class ProfileController extends Controller
 
         if ($profile && $profile->profile) {
             // Eliminar archivo del storage
-            Storage::disk('public')->delete($profile->profile);
+            if (Storage::disk('public')->exists($profile->profile)) {
+                Storage::disk('public')->delete($profile->profile);
+            }
             
-            // Eliminar registro de la base de datos
-            $profile->delete();
+            $profile->profile = null;
+            $profile->save();
         }
 
         return Redirect::route('profile.user')->with('status', 'image-deleted');
@@ -140,7 +149,7 @@ class ProfileController extends Controller
     public function updateCover(Request $request)
     {
         $request->validate([
-            'cover_image' => 'required|image|mimes:jpg,jpeg,png|max:2048'
+            'cover_image' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120'
         ]);
         $user = auth()->user();
         $profile = $user->profile;
@@ -149,6 +158,9 @@ class ProfileController extends Controller
             $profile->id_user = $user->id_usuario;
         }
         if ($request->hasFile('cover_image')) {
+            if ($profile->cover_image && Storage::disk('public')->exists($profile->cover_image)) {
+                Storage::disk('public')->delete($profile->cover_image);
+            }
             $path = $request->file('cover_image')->store('covers', 'public');
             $profile->cover_image = $path;
         }
@@ -159,16 +171,16 @@ class ProfileController extends Controller
     public function deleteCover(Request $request): RedirectResponse
     {
         $user = $request->user();
-        $profile = Profile::where('id_user', $user->id)->first();
+        $profile = $user->profile;
 
-        if ($profile && $profile->cover_imagen) {
+        if ($profile && $profile->cover_image) {
             // Eliminar archivo del storage
             if (Storage::disk('public')->exists($profile->cover_image)) {
                 Storage::disk('public')->delete($profile->cover_image);
             }
         
             // Eliminar referencia en la base de datos
-            $profile->cover_imagen = null;
+            $profile->cover_image = null;
             $profile->save();
         
             return Redirect::route('profile.user')->with('status', 'cover-deleted');
@@ -177,7 +189,11 @@ class ProfileController extends Controller
         return Redirect::route('profile.user')->with('error', 'No se encontró imagen de portada para eliminar');
     }
 
-    public function config(): View {
-        return view('profile.configuracion');
+    public function config(Request $request): View
+    {
+        return view('profile.configuracion', [
+            'user' => $request->user(),
+            'profile' => $request->user()->profile,
+        ]);
     }
 }
