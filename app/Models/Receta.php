@@ -16,11 +16,13 @@ class Receta extends Model
         'nombre_receta',
         'slug',
         'porciones',
+        'cantidad_porciones',
+        'tipo_porcion',
         'id_usuario',
         'fecha_creacion',
         'descripcion',
         'procedimiento',
-        'imagen'
+        'imagen',
     ];
 
     protected $primaryKey = 'id_receta';
