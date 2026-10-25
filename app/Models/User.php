@@ -10,8 +10,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable //implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
@@ -32,7 +33,9 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $fillable = [
         'nombre',        // En lugar de 'name'
         'email',
+        'email_verified_at',
         'contrasena',    // En lugar de 'password'
+        'google_id',
         'institution',
         'rol'
     ];
@@ -71,6 +74,35 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getNameAttribute()
     {
         return $this->nombre;
+    }
+
+    public function setNameAttribute($value)
+    {
+        $this->attributes['nombre'] = $value;
+    }
+
+    public function getPasswordAttribute()
+    {
+        return $this->contrasena;
+    }
+
+    public function setPasswordAttribute($value)
+    {
+        $this->attributes['contrasena'] = $value;
+    }
+
+    public function getIdAttribute()
+    {
+        return $this->id_usuario;
+    }
+
+    public function getAvatarUrlAttribute(): string
+    {
+        if ($this->profile?->profile) {
+            return Storage::disk('public')->url($this->profile->profile);
+        }
+
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=059669&color=fff&size=256';
     }
     
     // Accessor para mantener compatibilidad con 'password'
