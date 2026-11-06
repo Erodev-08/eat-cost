@@ -39,8 +39,14 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile/cover', [ProfileController::class, 'deleteCover'])->name('profile.cover.destroy');
     Route::get('/profile/configuracion', [ProfileController::class, 'config'])->name('profile.configuracion');
 
-    Route::get('/profile/receta', [ProfileController::class, 'recetaview'])->name('profile.user.recetas');
-    Route::get('/profile/mis-recetas-elaboradas', [ProfileController::class, 'recetaselaboradasview'])->name('profile.user.mis-recetas-elaboradas');
+    Route::get('/profile/receta', [ProfileController::class, 'recetaview'])->name('profile.recetas');
+    Route::get('/profile/receta/create', [ProfileController::class, 'recetaviewCreate'])->name('profile.recetas.create');
+    Route::post('/profile/receta/stora', [ProfileController::class, 'recetaviewStore'])->name('profile.recetas.store');
+    Route::get('/profile/receta/{receta}', [ProfileController::class, 'recetaviewShow'])->name('profile.recetas.show');
+    Route::get('profile/receta/{receta}/edit', [ProfileController::class, 'recetaviewEdit'])->name('profile.recetas.edit');
+    Route::put('/profile/receta/{receta}', [ProfileController::class, 'recetaviewUpdate'])->name('profile.recetas.update');
+    Route::delete('/profile/receta/{receta}', [ProfileController::class, 'recetaviewDestroy'])->name('profile.recetas.destroy');
+    Route::get('/profile/mis-recetas-elaboradas', [ProfileController::class, 'recetaselaboradasview'])->name('profile.mis-recetas-elaboradas');
 
     Route::get('/receta/create', [RecetaController::class, 'create'])->name('recetas.create');
     Route::post('/receta/store', [RecetaController::class, 'store'])->name('recetas.store');
