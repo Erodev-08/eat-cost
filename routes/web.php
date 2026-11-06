@@ -46,7 +46,7 @@ Route::middleware('auth')->group(function () {
     Route::get('profile/receta/{receta}/edit', [ProfileController::class, 'recetaviewEdit'])->name('profile.recetas.edit');
     Route::put('/profile/receta/{receta}', [ProfileController::class, 'recetaviewUpdate'])->name('profile.recetas.update');
     Route::delete('/profile/receta/{receta}', [ProfileController::class, 'recetaviewDestroy'])->name('profile.recetas.destroy');
-    Route::get('/profile/mis-recetas-elaboradas', [ProfileController::class, 'recetaselaboradasview'])->name('profile.mis-recetas-elaboradas');
+    Route::get('/profile/mis-recetas-elaboradas', [ProfileController::class, 'recetaselaboradasview'])->name('profile.user.mis-recetas-elaboradas');
 
     Route::get('/receta/create', [RecetaController::class, 'create'])->name('recetas.create');
     Route::post('/receta/store', [RecetaController::class, 'store'])->name('recetas.store');
