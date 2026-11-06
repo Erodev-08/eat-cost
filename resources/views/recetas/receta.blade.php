@@ -62,7 +62,7 @@
                                         <i class="ri-scales-3-line"></i>
                                         <span>Calcular</span>
                                     </a>
-                                    @if(auth()->check() && auth()->id() === $receta->id_usuario)
+                                    {{-- @if(auth()->check() && auth()->id() === $receta->id_usuario)
                                         <a href="{{ route('recetas.edit', $receta) }}" class="inline-flex items-center gap-1.5 px-4 py-2 bg-white text-gray-700 border border-gray-200 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">
                                             <i class="ri-pencil-line"></i>
                                             <span>Editar</span>
@@ -76,7 +76,7 @@
                                             <i class="ri-delete-bin-line"></i>
                                             <span>Eliminar</span>
                                         </button>
-                                    @endif
+                                    @endif --}}
                                 </div>
                             </div>
                         </div>
