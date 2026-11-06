@@ -89,21 +89,21 @@
                         </p>
                         <ul class="space-y-1">
                             <li>
-                                {{-- <a href="{{ route('profile.user.recetas') }}" 
-                                   class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('recetas') && !request()->routeIs('recetas.create') ? 'bg-emerald-50 text-emerald-700 font-semibold shadow-xs' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                                {{-- <a href="{{ route('profile.recetas') }}" 
+                                   class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('profile.recetas') ? 'bg-emerald-50 text-emerald-700 font-semibold shadow-xs' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
                                     <i class="ri-book-read-line text-lg {{ request()->routeIs('recetas') && !request()->routeIs('recetas.create') ? 'text-emerald-600 font-bold' : 'text-gray-400' }}"></i>
                                     <span>Mis Recetas</span>
                                 </a> --}}
-                                <a href="{{ route('profile.user.recetas') }}" 
-                                   class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('profile.user.recetas') ? 'bg-emerald-50 text-emerald-700 font-semibold shadow-xs' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
-                                    <i class="ri-book-read-line text-lg {{ request()->routeIs('profile.user.recetas') ? 'text-emerald-600 font-bold' : 'text-gray-400' }}"></i>
+                                <a href="{{ route('profile.recetas') }}" 
+                                   class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('profile.recetas') ? 'bg-emerald-50 text-emerald-700 font-semibold shadow-xs' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                                    <i class="ri-book-read-line text-lg {{ request()->routeIs('profile.recetas') ? 'text-emerald-600 font-bold' : 'text-gray-400' }}"></i>
                                     <span>Mis Recetas</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="{{ route('recetas.create') }}" 
-                                   class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('recetas.create') ? 'bg-emerald-50 text-emerald-700 font-semibold shadow-xs' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
-                                    <i class="ri-add-circle-line text-lg {{ request()->routeIs('recetas.create') ? 'text-emerald-600 font-bold' : 'text-gray-400' }}"></i>
+                                <a href="{{ route('profile.recetas.create') }}" 
+                                   class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('profile.recetas.create') ? 'bg-emerald-50 text-emerald-700 font-semibold shadow-xs' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                                    <i class="ri-add-circle-line text-lg {{ request()->routeIs('profile.recetas.create') ? 'text-emerald-600 font-bold' : 'text-gray-400' }}"></i>
                                     <span>Nueva Receta</span>
                                 </a>
                             </li>
