@@ -238,5 +238,219 @@
 
         </div>
 
+        <script>
+            function mostrarNombreArchivo(event) {
+                const input = event.target;
+
+                if (input.files.length > 0) {
+                    const archivo = input.files[0];
+                    const nombreElemento = document.getElementById('nombreArchivo');
+                    const archivoElemento = document.getElementById('elementoArchivo');
+
+                    // Mostrar nombre real del archivo
+                    nombreElemento.textContent = archivo.name;
+
+                    archivoElemento.classList.remove('hidden');
+
+                    // (Opcional) Preview de imagen
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        // Aqui luego puedes mostrar la imagen si quieres
+                        console.log("Imagen cargada");
+                        document.getElementById('previewContainer').innerHTML = `
+                            <img src="${e.target.result}" class="w-full h-full object-cover rounded-md">
+                        `;
+                    };
+                    reader.readAsDataURL(archivo);
+                }
+            }
+
+            let contadorIngredientes = document.querySelectorAll('#listaIngredientes > .ingrediente-item').length;
+
+            function actualizarContadorIngredientes() {
+                const total = document.querySelectorAll('#listaIngredientes > .ingrediente-item').length;
+                const texto = document.getElementById('text_ingrediente_cantidad');
+
+                texto.textContent = total === 0
+                    ? '---'
+                    : `${total} ${total === 1 ? '' : ''}`;
+            }
+
+            document.addEventListener('DOMContentLoaded', actualizarContadorIngredientes);
+
+            document.addEventListener('change', function (event) {
+                if (!event.target.classList.contains('unidad-medida')) return;
+
+                const tarjeta = event.target.closest('.ingrediente-item');
+                if (!tarjeta) return;
+
+                const visible = tarjeta.querySelector('.presentacion-unidad');
+                const oculto = tarjeta.querySelector('.presentacion-unidad-hidden');
+                if (visible) visible.value = event.target.value;
+                if (oculto) oculto.value = event.target.value;
+            })
+
+            function escapeHtml(valor) {
+                return String(valor ?? '')
+                    .replaceAll('&', '&amp;')
+                    .replaceAll('<', '&lt;')
+                    .replaceAll('>', '&gt;')
+                    .replaceAll('"', '&quot;')
+                    .replaceAll("'", '&#039;');
+            }
+
+            function plantillaIngrediente(indice, ingrediente = {}) {
+                return `
+                    <div class="ingrediente-item bg-white border border-gray-200 rounded-xl p-4 shadow-sm mb-3">
+                        <p class="text-sm font-bold mb-3 text-emerald-800 flex items-center gap-2">
+                            <i class="ri-restaurant-line"></i>
+                            Ingrediente #${indice + 1}
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div class="md:col-span-2">
+                                <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wide mb-1">Nombre</label>
+                                <input
+                                    type="text"
+                                    name="ingredientes[${indice}][nombre]"
+                                    value="${escapeHtml(ingrediente.nombre)}"
+                                    placeholder="Nombre del ingrediente"
+                                    class="w-full border border-gray-200 p-2.5 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                    required>
+                            </div>
+
+                            <div>
+                                <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wide mb-1">Unidad</label>
+                                <select
+                                    name="ingredientes[${indice}][unidad_medida]"
+                                    class="unidad-medida w-full border border-gray-200 p-2.5 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white"
+                                    required>
+                                    <option value="" ${!ingrediente.unidad_medida ? 'selected' : ''}>Selecciona unidad</option>
+                                    <option value="gr" ${ingrediente.unidad_medida === 'gr' ? 'selected' : ''}>gr</option>
+                                    <option value="kg" ${ingrediente.unidad_medida === 'kg' ? 'selected' : ''}>kg</option>
+                                    <option value="ml" ${ingrediente.unidad_medida === 'ml' ? 'selected' : ''}>ml</option>
+                                    <option value="l" ${ingrediente.unidad_medida === 'l' ? 'selected' : ''}>l</option>
+                                    <option value="pza" ${ingrediente.unidad_medida === 'pza' ? 'selected' : ''}>pza</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wide mb-1">Cantidad</label>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    min="0.01"
+                                    name="ingredientes[${indice}][cantidad]"
+                                    value="${escapeHtml(ingrediente.cantidad)}"
+                                    placeholder="Ej. 250"
+                                    class="w-full border border-gray-200 p-2.5 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                    required>
+                            </div>
+
+                            <div>
+                                <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wide mb-1">Unidad presentación</label>
+                                <select
+                                    class="presentacion-unidad w-full border border-gray-200 p-2.5 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white"
+                                    data-auto-sync="true"
+                                    disabled
+                                    required>
+                                    <option value="gr" ${ingrediente.unidad_medida === 'gr' ? 'selected' : ''}>gr</option>
+                                    <option value="kg" ${ingrediente.unidad_medida === 'kg' ? 'selected' : ''}>kg</option>
+                                    <option value="ml" ${ingrediente.unidad_medida === 'ml' ? 'selected' : ''}>ml</option>
+                                    <option value="l" ${ingrediente.unidad_medida === 'l' ? 'selected' : ''}>l</option>
+                                    <option value="pza" ${ingrediente.unidad_medida === 'pza' ? 'selected' : ''}>pza</option>
+                                </select>
+                                <input
+                                    type="hidden"
+                                    name="ingredientes[${indice}][presentacion_unidad]"
+                                    value="${escapeHtml(ingrediente.unidad_medida)}"
+                                    class="presentacion-unidad-hidden">
+                            </div>
+
+                            <div>
+                                <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wide mb-1">Cantidad presentación</label>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    min="0.01"
+                                    name="ingredientes[${indice}][presentacion_cantidad]"
+                                    value="${escapeHtml(ingrediente.presentacion_cantidad)}"
+                                    placeholder="Ej. 1"
+                                    class="w-full border border-gray-200 p-2.5 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                    required>
+                            </div>
+
+                            <div>
+                                <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wide mb-1">Costo presentación</label>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    min="0.01"
+                                    name="ingredientes[${indice}][costo_presentacion]"
+                                    value="${escapeHtml(ingrediente.costo_presentacion)}"
+                                    placeholder="Ej. 150"
+                                    class="w-full border border-gray-200 p-2.5 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                    required>
+                            </div>
+
+                        </div>
+                    </div>
+                `;
+            }
+
+            function agregarIngrediente(ingrediente = {}) {
+                const contenedor = document.getElementById('listaIngredientes');
+                contenedor.insertAdjacentHTML('beforeend', plantillaIngrediente(contadorIngredientes, ingrediente));
+                contadorIngredientes += 1;
+                actualizarContadorIngredientes();
+            }
+            </script>
+
+        @stack('scripts')
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        @if (session('status'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    let status = "{{ session('status') }}";
+
+                    let title = 'Operación realizada';
+                    let text = 'La acción se completó correctamente.';
+                    let icon = 'success';
+
+                    if (status === 'success-receta') {
+                        title = 'Receta creada';
+                        text = 'La receta se guardó correctamente.';
+                    }
+
+                    if (status === 'success-receta-update') {
+                        title = 'Receta actualizada';
+                        text = 'Los cambios se guardaron correctamente.';
+                    }
+
+                    if (status === 'success-receta-delete') {
+                        title = 'Receta eliminada';
+                        text = 'La receta se eliminó correctamente.';
+                    }
+
+                    if (status === 'success-calculo') {
+                        title = 'Cálculo generado';
+                        text = 'El cálculo de la receta se realizó correctamente.';
+                    }
+
+                    Swal.fire({
+                        icon: icon,
+                        title: title,
+                        text: text,
+                        confirmButtonText: 'Entendido',
+                        confirmButtonColor: '#2563eb',
+                        timer: 2500,
+                        timerProgressBar: true
+                    });
+                });
+            </script>
+        @endif
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     </body>
 </html>
