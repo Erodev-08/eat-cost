@@ -3,7 +3,11 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecetaController;
 use App\Http\Controllers\CalculoRecetaController;
+use App\Http\Controllers\GoogleAuthController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Receta;
+use App\Models\RecetaCalc;
 
 Route::get('/', function () {
     return view('home');
@@ -13,7 +17,15 @@ Route::view('/terminos', 'terms')->name('terms.show');
 Route::view('/privacidad', 'privacy')->name('privacy.show');
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $user = Auth::user();
+    //$recentRecetas = Receta::paginate(5);
+    $recentRecetas = Receta::where('id_usuario', $user->id_usuario)->paginate(5);
+    $recetasCount = Receta::where('id_usuario', $user->id_usuario)->count();
+    $calculosCount = RecetaCalc::whereHas('receta', function ($query) use ($user) {
+        $query->where('id_usuario', $user->id_usuario);
+    })->count();
+    $ingredientesCount = Receta::where('id_usuario', $user->id_usuario)->count();
+    return view('dashboard', compact('user', 'recetasCount', 'recentRecetas', 'calculosCount', 'ingredientesCount'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -26,6 +38,15 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile/cover', [ProfileController::class, 'updateCover'])->name('profile.cover.update');
     Route::delete('/profile/cover', [ProfileController::class, 'deleteCover'])->name('profile.cover.destroy');
     Route::get('/profile/configuracion', [ProfileController::class, 'config'])->name('profile.configuracion');
+
+    Route::get('/profile/receta', [ProfileController::class, 'recetaview'])->name('profile.recetas');
+    Route::get('/profile/receta/create', [ProfileController::class, 'recetaviewCreate'])->name('profile.recetas.create');
+    Route::post('/profile/receta/stora', [ProfileController::class, 'recetaviewStore'])->name('profile.recetas.store');
+    Route::get('/profile/receta/{receta}', [ProfileController::class, 'recetaviewShow'])->name('profile.recetas.show');
+    Route::get('profile/receta/{receta}/edit', [ProfileController::class, 'recetaviewEdit'])->name('profile.recetas.edit');
+    Route::put('/profile/receta/{receta}', [ProfileController::class, 'recetaviewUpdate'])->name('profile.recetas.update');
+    Route::delete('/profile/receta/{receta}', [ProfileController::class, 'recetaviewDestroy'])->name('profile.recetas.destroy');
+    Route::get('/profile/mis-recetas-elaboradas', [ProfileController::class, 'recetaselaboradasview'])->name('profile.user.mis-recetas-elaboradas');
 
     Route::get('/receta/create', [RecetaController::class, 'create'])->name('recetas.create');
     Route::post('/receta/store', [RecetaController::class, 'store'])->name('recetas.store');
@@ -53,5 +74,15 @@ Route::get('/mis-recetas-elaboradas/{recetaElaborada}/documento', [CalculoReceta
 
 Route::get('/mis-recetas-elaboradas/{recetaElaborada}/excel', [CalculoRecetaController::class, 'exportExcel'])
     ->name('recetas.elaboradas.excel');
+
+Route::get('/google-auth/redirect', [
+    GoogleAuthController::class,
+    'redirect'
+])->name('google');
+
+Route::get('/google-auth/callback', [
+    GoogleAuthController::class,
+    'callback'
+])->name('google.callback');
 
 require __DIR__.'/auth.php';

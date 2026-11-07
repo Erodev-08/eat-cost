@@ -50,11 +50,11 @@ class CalculoRecetaController extends Controller
                 ])->withInput();
             }
 
-            if ($costoPresentacion <= 0) {
-                return back()->withErrors([
-                    'ingredientes' => "El ingrediente {$ingrediente->nombre} no tiene costo de presentación válido."
-                ])->withInput();
-            }
+            // if ($costoPresentacion <= 0) {
+            //     return back()->withErrors([
+            //         'ingredientes' => "El ingrediente {$ingrediente->nombre} no tiene costo de presentación válido."
+            //     ])->withInput();
+            // }
 
             $datosIngrediente = $request->input("ingredientes.{$ingrediente->id_ingrediente}", []);
 

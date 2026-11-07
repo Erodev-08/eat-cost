@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('nombre', 100);
             $table->string('email', 100)->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('contrasena', 255);
+            $table->string('contrasena', 255)->nullable();
+            $table->string('google_id')->nullable();
             $table->string('institution')->nullable();
             $table->enum('rol', ['estudiante', 'admin'])->default('estudiante');
             $table->rememberToken();

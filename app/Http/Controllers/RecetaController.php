@@ -28,6 +28,7 @@ class RecetaController extends Controller
         'ingredientes.*.unidad_medida' => ['required', 'string', 'max:20'],
         'ingredientes.*.presentacion_cantidad' => ['required', 'numeric', 'min:0.01'],
         'ingredientes.*.presentacion_unidad' => ['required', 'string', 'max:20'],
+        'ingredientes.*.costo_presentacion' => ['required', 'string', 'max:20'],
 
     ]);
 
@@ -113,6 +114,7 @@ class RecetaController extends Controller
         'ingredientes.*.unidad_medida' => ['required', 'string', 'max:20'],
         'ingredientes.*.presentacion_cantidad' => ['required', 'numeric', 'min:0.01'],
         'ingredientes.*.presentacion_unidad' => ['required', 'string', 'max:20'],
+        'ingredientes.*.costo_presentacion' => ['required', 'string', 'max:20'],
     ]);
 
         $rutaImagen = $receta->imagen;

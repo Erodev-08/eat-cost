@@ -333,6 +333,18 @@
                                     required>
                             </div>
 
+                            <div>
+                                <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wide mb-1">Costo presentación</label>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    min="0.01"
+                                    name="ingredientes[${i}][costo_presentacion]"
+                                    placeholder="Ej. 150"
+                                    class="w-full border border-gray-200 p-2.5 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                    required>
+                            </div>
+
                         </div>
 
                     </div>

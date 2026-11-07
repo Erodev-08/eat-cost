@@ -12,7 +12,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable //implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
@@ -35,6 +35,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'email_verified_at',
         'contrasena',    // En lugar de 'password'
+        'google_id',
         'institution',
         'rol'
     ];

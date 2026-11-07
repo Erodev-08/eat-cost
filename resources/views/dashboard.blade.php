@@ -65,7 +65,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             
             {{-- Metric 1: Recetas Creadas --}}
-            <div class="bg-white rounded-2xl p-4.5 border border-gray-200/80 shadow-xs hover:border-emerald-200 transition-colors">
+            <div class="bg-white rounded-2xl p-4 border border-gray-200/80 shadow-xs hover:border-emerald-200 transition-colors">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-[11px] font-bold text-gray-600 uppercase tracking-wider">Recetas Registradas</p>
@@ -83,7 +83,7 @@
             </div>
 
             {{-- Metric 2: Cálculos Realizados --}}
-            <div class="bg-white rounded-2xl p-4.5 border border-gray-200/80 shadow-xs hover:border-emerald-200 transition-colors">
+            <div class="bg-white rounded-2xl p-4 border border-gray-200/80 shadow-xs hover:border-emerald-200 transition-colors">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-[11px] font-bold text-gray-600 uppercase tracking-wider">Costeos Realizados</p>
@@ -101,7 +101,7 @@
             </div>
 
             {{-- Metric 3: Ingredientes --}}
-            <div class="bg-white rounded-2xl p-4.5 border border-gray-200/80 shadow-xs hover:border-emerald-200 transition-colors">
+            <div class="bg-white rounded-2xl p-4 border border-gray-200/80 shadow-xs hover:border-emerald-200 transition-colors">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-[11px] font-bold text-gray-600 uppercase tracking-wider">Ingredientes Activos</p>
@@ -119,7 +119,7 @@
             </div>
 
             {{-- Metric 4: Usuario / Rol --}}
-            <div class="bg-white rounded-2xl p-4.5 border border-gray-200/80 shadow-xs hover:border-emerald-200 transition-colors">
+            <div class="bg-white rounded-2xl p-4 border border-gray-200/80 shadow-xs hover:border-emerald-200 transition-colors">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-[11px] font-bold text-gray-600 uppercase tracking-wider">Rol de Cuenta</p>

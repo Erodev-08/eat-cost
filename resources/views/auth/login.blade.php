@@ -19,7 +19,12 @@
         </p>
     </div>
 
-    
+    <div class="pt-2">
+        <a href="{{route('google')}}" class="w-full rounded-xl text-white bg-red-500 py-3 text-xs font-bold shadow-md shadow-red-400/20 hover:bg-red-600 active:bg-red-500 transition-all flex items-center justify-center gap-2 cursor-pointer">
+            <i class="ri-google-line text-sm"></i>
+            <span>Google</span>
+        </a>
+    </div>
 
     <!-- Divider -->
     <div class="relative my-4">
