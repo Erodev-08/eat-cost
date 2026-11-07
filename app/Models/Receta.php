@@ -23,6 +23,11 @@ class Receta extends Model
         'descripcion',
         'procedimiento',
         'imagen',
+        'es_publica',
+    ];
+
+    protected $casts = [
+        'es_publica' => 'boolean',
     ];
 
     protected $primaryKey = 'id_receta';

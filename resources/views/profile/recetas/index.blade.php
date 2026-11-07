@@ -57,6 +57,9 @@
                             <h2 class="text-xl font-bold text-gray-900 line-clamp-2">
                                 {{ $receta->nombre_receta }}
                             </h2>
+                            <span class="mt-1 inline-flex w-fit items-center rounded-full px-2.5 py-1 text-xs font-semibold {{ $receta->es_publica ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-600' }}">
+                                {{ $receta->es_publica ? 'Pública' : 'Privada' }}
+                            </span>
 
                             <p class="mt-2 text-sm text-gray-600 leading-relaxed line-clamp-3">
                                 {{ $receta->descripcion }}

@@ -18,11 +18,12 @@ class RecetaController extends Controller
         $validated = $request->validate([
         'nombre_receta' => ['required', 'string', 'min:3', 'max:150'],
         'cantidad_porciones' => ['required', 'integer', 'min:1'],
-        'tipo_porcion' => ['required', 'string'],
+        'tipo_porcion' => ['required', 'string', 'in:platillos,vasos,rebanadas,piezas,porciones'],
+        'es_publica' => ['sometimes', 'boolean'],
         'descripcion' => ['nullable', 'string'],
         'procedimiento' => ['nullable', 'string'],
         'imagen' => ['nullable', 'image', 'max:2048'],
-        'ingredientes' => ['required', 'array'],
+        'ingredientes' => ['required', 'array', 'min:1'],
         'ingredientes.*.nombre' => ['required', 'string', 'max:100'],
         'ingredientes.*.cantidad' => ['required', 'numeric', 'min:0.01'],
         'ingredientes.*.unidad_medida' => ['required', 'string', 'max:20'],
@@ -48,6 +49,7 @@ class RecetaController extends Controller
         'descripcion' => $request->input('descripcion'),
         'procedimiento' => $request->input('procedimiento'),
         'imagen' => $rutaImagen,
+        'es_publica' => $validated['es_publica'] ?? false,
     ]);
 
         if ($request->has('ingredientes')) {
@@ -58,11 +60,15 @@ class RecetaController extends Controller
     }
 
     public function index() {
-        $recetas = Receta::paginate(5);
+        $recetas = Receta::where('es_publica', true)->paginate(5);
         return View('recetas.receta', compact('recetas'));
     }
 
     public function show(Receta $receta) {
+        abort_unless(
+            $receta->es_publica || (auth()->check() && $receta->id_usuario === auth()->id()),
+            404
+        );
         $receta->load('ingredientes');
         return view('recetas.show', ['receta' => $receta]);
     }
@@ -87,8 +93,9 @@ class RecetaController extends Controller
         'procedimiento' => ['nullable', 'string'],
         'imagen' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
         'cantidad_porciones' => ['required', 'integer', 'min:1'],
-        'tipo_porcion' => ['required', 'string'],
-        'ingredientes' => ['required', 'array'],
+        'tipo_porcion' => ['required', 'string', 'in:platillos,vasos,rebanadas,piezas,porciones'],
+        'es_publica' => ['sometimes', 'boolean'],
+        'ingredientes' => ['required', 'array', 'min:1'],
         'ingredientes.*.nombre' => ['required', 'string', 'max:100'],
         'ingredientes.*.cantidad' => ['required', 'numeric', 'min:0.01'],
         'ingredientes.*.unidad_medida' => ['required', 'string', 'max:20'],
@@ -115,6 +122,7 @@ class RecetaController extends Controller
             'descripcion' => $validated['descripcion'] ?? null,
             'procedimiento' => $validated['procedimiento'] ?? null,
             'imagen' => $rutaImagen,
+            'es_publica' => $validated['es_publica'] ?? false,
         ]);
 
         $this->syncIngredientes($receta, $request->input('ingredientes', []));

@@ -6,11 +6,13 @@ use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\Profile;
 use App\Models\Receta;
 use App\Models\RecetaCalc;
+use App\Models\Ingrediente;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
@@ -203,7 +205,7 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
         $recetas = Receta::where('id_usuario', $user->id_usuario)->paginate(5);
-        return view('profile.recetas', compact('recetas', 'user'));
+        return view('profile.recetas.index', compact('recetas', 'user'));
     }
 
     public function recetaselaboradasview()
@@ -214,7 +216,7 @@ class ProfileController extends Controller
         $user = Auth::user();
         $recetasElaboradas = RecetaCalc::where('id_usuario', $user->id_usuario)->paginate(5);
 
-        return view('profile.mis-recetas-elaboradas', compact('recetasElaboradas', 'user'));
+        return view('profile.recetas_elaboradas.index', compact('recetasElaboradas', 'user'));
     }
 
     public function recetaviewCreate()
@@ -227,11 +229,12 @@ class ProfileController extends Controller
         $validated = $request->validate([
             'nombre_receta'                         => ['required', 'string', 'min:3', 'max:150'],
             'cantidad_porciones'                    => ['required', 'integer', 'min:1'],
-            'tipo_porcion'                          => ['required', 'string'],
+            'tipo_porcion'                          => ['required', 'string', 'in:platillos,vasos,rebanadas,piezas,porciones'],
+            'es_publica'                            => ['sometimes', 'boolean'],
             'descripcion'                           => ['nullable', 'string'],
             'procedimiento'                         => ['nullable', 'string'],
             'imagen'                                => ['nullable', 'image', 'max:2048'],
-            'ingredientes'                          => ['required', 'array'],
+            'ingredientes'                          => ['required', 'array', 'min:1'],
             'ingredientes.*.nombre'                 => ['required', 'string', 'max:100'],
             'ingredientes.*.cantidad'               => ['required', 'numeric', 'min:0.01'],
             'ingredientes.*.unidad_medida'          => ['required', 'string', 'max:20'],
@@ -256,6 +259,7 @@ class ProfileController extends Controller
             'descripcion' => $request->input('descripcion'),
             'procedimiento' => $request->input('procedimiento'),
             'imagen' => $rutaImagen,
+            'es_publica' => $validated['es_publica'] ?? false,
         ]);
 
         if ($request->has('ingredientes')) {
@@ -268,14 +272,17 @@ class ProfileController extends Controller
 
     public function recetaviewUpdate(Request $request, Receta $receta)
     {
+        abort_unless($receta->id_usuario === auth()->id(), 404);
+
         $validated = $request->validate([
             'nombre_receta'                         => ['required', 'string', 'min:3', 'max:150'],
             'descripcion'                           => ['nullable', 'string'],
             'procedimiento'                         => ['nullable', 'string'],
             'imagen'                                => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'cantidad_porciones'                    => ['required', 'integer', 'min:1'],
-            'tipo_porcion'                          => ['required', 'string'],
-            'ingredientes'                          => ['required', 'array'],
+            'tipo_porcion'                          => ['required', 'string', 'in:platillos,vasos,rebanadas,piezas,porciones'],
+            'es_publica'                            => ['sometimes', 'boolean'],
+            'ingredientes'                          => ['required', 'array', 'min:1'],
             'ingredientes.*.nombre'                 => ['required', 'string', 'max:100'],
             'ingredientes.*.cantidad'               => ['required', 'numeric', 'min:0.01'],
             'ingredientes.*.unidad_medida'          => ['required', 'string', 'max:20'],
@@ -301,6 +308,7 @@ class ProfileController extends Controller
             'descripcion'        => $validated['descripcion'] ?? null,
             'procedimiento'      => $validated['procedimiento'] ?? null,
             'imagen'             => $rutaImagen,
+            'es_publica'         => $validated['es_publica'] ?? false,
         ]);
 
         $this->syncIngredientes($receta, $request->input('ingredientes', []));
@@ -311,18 +319,21 @@ class ProfileController extends Controller
 
     public function recetaviewShow(Receta $receta)
     {
+        abort_unless($receta->id_usuario === auth()->id(), 404);
         $receta->load('ingredientes');
         return view('profile.recetas.show', ['receta' => $receta]);
     }
 
     public function recetaviewEdit(Receta $receta)
     {
+        abort_unless($receta->id_usuario === auth()->id(), 404);
         $receta->load('ingredientes');
         return view('profile.recetas.edit', ['receta' => $receta]);
     }
 
     public function recetaviewDestroy(Receta $receta)
     {
+        abort_unless($receta->id_usuario === auth()->id(), 404);
         if ($receta->imagen) {
             Storage::disk('public')->delete($receta->imagen);
         }

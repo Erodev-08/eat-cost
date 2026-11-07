@@ -9,7 +9,7 @@
             <div class="flex items-center justify-between">
                 <div class="mb-8">
                     <h1 class="text-4xl font-extrabold text-gray-900 mb-2 mt-3 tracking-tight">
-                        Mis Recetas
+                        Recetas
                         <span class="block h-1.5 w-16 bg-emerald-500 rounded-full mt-2"></span>
                     </h1>
                 </div>

@@ -48,6 +48,17 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile/receta/{receta}', [ProfileController::class, 'recetaviewDestroy'])->name('profile.recetas.destroy');
     Route::get('/profile/mis-recetas-elaboradas', [ProfileController::class, 'recetaselaboradasview'])->name('profile.user.mis-recetas-elaboradas');
 
+    Route::get('/aprendizaje', [\App\Http\Controllers\AprendizajeController::class, 'index'])
+        ->name('aprendizaje.index');
+    Route::get('/aprendizaje/simulador', [\App\Http\Controllers\AprendizajeController::class, 'simulador'])
+        ->name('aprendizaje.simulador');
+    Route::get('/aprendizaje/{slug}', [\App\Http\Controllers\AprendizajeController::class, 'show'])
+        ->name('aprendizaje.show');
+    Route::post('/aprendizaje/{slug}/evaluar', [\App\Http\Controllers\AprendizajeController::class, 'evaluarQuiz'])
+        ->name('aprendizaje.evaluar');
+    Route::post('/aprendizaje/{slug}/reintentar', [\App\Http\Controllers\AprendizajeController::class, 'reintentarQuiz'])
+        ->name('aprendizaje.reintentar');
+
     Route::get('/receta/create', [RecetaController::class, 'create'])->name('recetas.create');
     Route::post('/receta/store', [RecetaController::class, 'store'])->name('recetas.store');
     Route::get('/receta/{receta}/edit', [RecetaController::class, 'edit'])->name('recetas.edit');

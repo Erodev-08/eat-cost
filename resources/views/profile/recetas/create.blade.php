@@ -110,6 +110,23 @@
                                     </div>
                                 </div>
 
+                                <div class="mb-5 max-w-lg mx-auto">
+                                    <span class="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wide">Visibilidad</span>
+                                    <div class="flex gap-4">
+                                        <label class="inline-flex items-center gap-2 text-sm text-gray-700">
+                                            <input type="radio" name="es_publica" value="0" @checked(old('es_publica', '0') === '0') required>
+                                            Privada
+                                        </label>
+                                        <label class="inline-flex items-center gap-2 text-sm text-gray-700">
+                                            <input type="radio" name="es_publica" value="1" @checked(old('es_publica') === '1')>
+                                            Pública
+                                        </label>
+                                    </div>
+                                    @error('es_publica')
+                                        <p class="text-xs text-red-500 mt-1.5 font-medium">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
                                 <div class="mb-6 max-w-lg mx-auto">
                                     <label for="procedimiento" class="block text-xs font-bold text-gray-700 mb-1.5 uppercase tracking-wide">Procedimiento</label>
                                     <textarea name="procedimiento" id="procedimiento" class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white shadow-sm transition-all" style="height: 7rem">{{ old('procedimiento') }}</textarea>

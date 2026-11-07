@@ -6,7 +6,7 @@
             <span class="text-gray-300">/</span>
             {{-- <span class="text-gray-900 font-medium">Usuario</span>
             <span class="text-gray-300">/</span> --}}
-            <span class="text-gray-900 font-bold">Mis recetas elaboradas</span>
+            <span class="text-gray-900 font-bold">Costeo &amp; Mermas</span>
         </div>
         <div class="flex items-center gap-2.5">
             <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
@@ -20,10 +20,22 @@
     </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-        <div class="mb-2">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-2">
             <h1 class="text-xl font-bold text-gray-900 flex items-center gap-2">
-                Mis recetas elaboradas
+                Costeo &amp; Mermas
             </h1>
+            <div class="flex flex-wrap gap-3">
+                <a href="{{ route('profile.recetas') }}"
+                    class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-xl py-2.5 px-4 shadow-sm transition-all">
+                    <i class="ri-user-star-line"></i>
+                    <span>Ir a mis recetas</span>
+                </a>
+                <a href="{{ route('recetas') }}"
+                    class="inline-flex items-center gap-2 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 text-sm font-medium rounded-xl py-2.5 px-4 shadow-sm transition-all">
+                    <i class="ri-global-line"></i>
+                    <span>Ir a recetas</span>
+                </a>
+            </div>
         </div>
     </div>
 
@@ -110,11 +122,6 @@
                     Cuando calcules el costo y rendimiento de una receta, los resultados aparecerán en este apartado.
                 </p>
 
-                <a href="{{ route('recetas') }}"
-                    class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl py-2.5 px-6 shadow-sm shadow-emerald-600/20 transition-all hover:-translate-y-0.5">
-                    <i class="ri-arrow-right-line"></i>
-                    <span>Ir a mis recetas</span>
-                </a>
             </div>
         @endif
     </div>
