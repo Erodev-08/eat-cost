@@ -14,13 +14,26 @@
 
 		<!-- Vite Assets -->
 		@vite(['resources/css/app.css', 'resources/js/app.js'])
+
+		<script>
+			if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+				document.documentElement.classList.add('dark');
+			} else {
+				document.documentElement.classList.remove('dark');
+			}
+		</script>
 	</head>
-	<body class="font-sans antialiased bg-gray-50 text-gray-900 min-h-full flex flex-col">
+	<body class="font-sans antialiased bg-gray-50 dark:bg-slate-900 text-gray-900 dark:text-slate-100 min-h-full flex flex-col transition-colors duration-200">
 		
+		{{-- Floating theme toggle --}}
+		<div class="fixed top-4 right-4 z-50">
+			<x-theme-toggle class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border border-gray-200/80 dark:border-slate-700 shadow-sm" />
+		</div>
+
 		<div class="min-h-screen grid grid-cols-1 lg:grid-cols-12 flex-1">
 			
 			{{-- Left Brand Banner (Hidden on Mobile, Visible on Desktop) --}}
-			<section class="hidden lg:flex lg:col-span-5 xl:col-span-5 relative overflow-hidden bg-gradient-to-br from-emerald-700 via-emerald-600 to-teal-800 text-white px-8 py-12 xl:px-12 flex-col justify-between shadow-2xl">
+			<section class="hidden lg:flex lg:col-span-5 xl:col-span-5 relative overflow-hidden bg-gradient-to-br from-emerald-800 via-emerald-700 to-teal-900 text-white px-8 py-12 xl:px-12 flex-col justify-between shadow-2xl">
 				
 				{{-- Decorative background glow circles --}}
 				<div class="absolute inset-0 opacity-20 pointer-events-none">
@@ -101,7 +114,7 @@
 			</section>
 
 			{{-- Right Form Container --}}
-			<section class="col-span-1 lg:col-span-7 xl:col-span-7 flex flex-col items-center justify-center px-4 py-10 sm:px-8 lg:px-12 xl:px-16 bg-gray-50/70">
+			<section class="col-span-1 lg:col-span-7 xl:col-span-7 flex flex-col items-center justify-center px-4 py-10 sm:px-8 lg:px-12 xl:px-16 bg-gray-50/70 dark:bg-slate-900/90 transition-colors">
 				
 				{{-- Mobile Brand Logo Header --}}
 				<div class="lg:hidden mb-6 text-center">
@@ -110,22 +123,22 @@
 							<i class="ri-restaurant-line text-xl"></i>
 						</div>
 						<div class="text-left">
-							<div class="text-xl font-black tracking-tight text-gray-900">
-								<span class="text-emerald-700">Eat</span><span class="text-gray-300 mx-0.5 font-light">•</span><span class="text-emerald-500">Cost</span>
+							<div class="text-xl font-black tracking-tight text-gray-900 dark:text-white">
+								<span class="text-emerald-600 dark:text-emerald-400">Eat</span><span class="text-gray-300 dark:text-gray-600 mx-0.5 font-light">•</span><span class="text-emerald-500">Cost</span>
 							</div>
-							<p class="text-[9px] uppercase font-bold tracking-wider text-gray-500">Costeo Gastronómico</p>
+							<p class="text-[9px] uppercase font-bold tracking-wider text-gray-500 dark:text-gray-400">Costeo Gastronómico</p>
 						</div>
 					</a>
 				</div>
 
 				{{-- Form Card --}}
-				<div class="w-full max-w-md bg-white rounded-3xl border border-gray-200/90 p-6 sm:p-8 shadow-xl shadow-gray-200/50">
+				<div class="w-full max-w-md bg-white dark:bg-slate-800 rounded-3xl border border-gray-200/90 dark:border-slate-700 p-6 sm:p-8 shadow-xl shadow-gray-200/50 dark:shadow-slate-950/40 transition-colors">
 					{{ $slot }}
 				</div>
 
 				{{-- Back to Home link --}}
 				<div class="mt-6 text-center">
-					<a href="{{ route('home') }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-emerald-700 transition-colors">
+					<a href="{{ route('home') }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-gray-500 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
 						<i class="ri-arrow-left-line"></i>
 						Volver a la página principal
 					</a>

@@ -14,11 +14,16 @@
             'route'     => route('recetas.elaboradas.index'),
             'active'    => request()->routeIs('recetas.elaboradas.*'),
             'name'      => __('Costeo & Mermas')
+        ],
+        [
+            'route'     => route('aprendizaje.index'),
+            'active'    => request()->routeIs('aprendizaje.*'),
+            'name'      => __('Aprender Teoría')
         ]
     ];
 @endphp
 
-<nav class="bg-white/95 backdrop-blur-xs fixed w-full z-30 top-0 start-0 border-b border-gray-200 shadow-xs">
+<nav class="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xs fixed w-full z-30 top-0 start-0 border-b border-gray-200 dark:border-gray-800 shadow-xs transition-colors duration-200">
     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4 py-3">
         
         {{-- Logo Eat-Cost --}}
@@ -27,8 +32,8 @@
                 <i class="ri-restaurant-line text-lg"></i>
             </div>
             <div>
-                <div class="text-xl font-bold tracking-tight text-gray-900">
-                    <span class="text-emerald-700 font-extrabold">Eat</span><span class="text-gray-300 font-light mx-0.5">•</span><span class="text-emerald-500 font-semibold">Cost</span>
+                <div class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+                    <span class="text-emerald-700 dark:text-emerald-400 font-extrabold">Eat</span><span class="text-gray-300 dark:text-gray-600 font-light mx-0.5">•</span><span class="text-emerald-500 font-semibold">Cost</span>
                 </div>
             </div>
         </a>
@@ -36,36 +41,44 @@
         {{-- Botones de la derecha --}}
         @if (Route::has('login'))
             <div class="flex items-center md:order-2 space-x-2.5">
+                {{-- Selector de tema Claro / Oscuro --}}
+                <x-theme-toggle />
+
                 @auth
                     <div class="relative">
                         <button type="button" 
-                                class="dropdown-btn flex items-center gap-2 px-3 py-1.5 text-sm font-semibold text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition duration-150">
+                                class="dropdown-btn flex items-center gap-2 px-3 py-1.5 text-sm font-semibold text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition duration-150">
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                             <span>{{ Auth::user()->name }}</span>
                             <i class="ri-arrow-down-s-line text-xs transition-transform duration-150 dropdown-icon"></i>
                         </button>
                         
-                        <div class="dropdown-menu absolute right-0 z-50 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 opacity-0 invisible transition-all duration-150 transform -translate-y-2 p-1.5">
-                            <a href="{{ url('/dashboard') }}" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-lg transition duration-150">
-                                <i class="ri-home-5-line text-emerald-600"></i>
+                        <div class="dropdown-menu absolute right-0 z-50 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 opacity-0 invisible transition-all duration-150 transform -translate-y-2 p-1.5">
+                            <a href="{{ url('/dashboard') }}" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-gray-700/60 hover:text-emerald-700 dark:hover:text-emerald-400 rounded-lg transition duration-150">
+                                <i class="ri-home-5-line text-emerald-600 dark:text-emerald-400"></i>
                                 Dashboard
                             </a>
                             
-                            <a href="{{ route('profile.user') }}" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-lg transition duration-150">
-                                <i class="ri-user-line text-emerald-600"></i>
+                            <a href="{{ route('profile.user') }}" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-gray-700/60 hover:text-emerald-700 dark:hover:text-emerald-400 rounded-lg transition duration-150">
+                                <i class="ri-user-line text-emerald-600 dark:text-emerald-400"></i>
                                 Mi Perfil
                             </a>
 
-                            <a href="{{ route('recetas') }}" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-lg transition duration-150">
-                                <i class="ri-book-open-line text-emerald-600"></i>
+                            <a href="{{ route('recetas') }}" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-gray-700/60 hover:text-emerald-700 dark:hover:text-emerald-400 rounded-lg transition duration-150">
+                                <i class="ri-book-open-line text-emerald-600 dark:text-emerald-400"></i>
                                 Recetas
                             </a>
+
+                            <a href="{{ route('aprendizaje.index') }}" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-gray-700/60 hover:text-emerald-700 dark:hover:text-emerald-400 rounded-lg transition duration-150">
+                                <i class="ri-graduation-cap-line text-emerald-600 dark:text-emerald-400"></i>
+                                Academia de Costos
+                            </a>
                             
-                            <div class="border-t border-gray-100 my-1"></div>
+                            <div class="border-t border-gray-100 dark:border-gray-700 my-1"></div>
                             
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <button type="submit" class="flex items-center gap-2 w-full px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition duration-150 text-left">
+                                <button type="submit" class="flex items-center gap-2 w-full px-3 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg transition duration-150 text-left">
                                     <i class="ri-logout-box-r-line"></i>
                                     Cerrar sesión
                                 </button>
@@ -74,7 +87,7 @@
                     </div>
                 @else
                     <div class="hidden md:flex md:space-x-2">
-                        <a href="{{ route('login') }}" class="text-gray-600 hover:text-emerald-700 px-3.5 py-1.5 rounded-lg text-sm font-semibold transition duration-150">
+                        <a href="{{ route('login') }}" class="text-gray-600 dark:text-gray-300 hover:text-emerald-700 dark:hover:text-emerald-400 px-3.5 py-1.5 rounded-lg text-sm font-semibold transition duration-150">
                             Iniciar Sesión
                         </a>
                         <a href="{{ route('register') }}" class="text-white bg-emerald-600 hover:bg-emerald-700 px-3.5 py-1.5 rounded-lg text-sm font-semibold shadow-xs transition duration-150">
@@ -84,7 +97,7 @@
                 @endauth
                
                 {{-- Menú móvil --}}
-                <button data-collapse-toggle="navbar-sticky" type="button" class="inline-flex items-center p-1.5 text-gray-500 rounded-lg md:hidden hover:bg-gray-100 transition duration-150" aria-controls="navbar-sticky" aria-expanded="false">
+                <button data-collapse-toggle="navbar-sticky" type="button" class="inline-flex items-center p-1.5 text-gray-500 dark:text-gray-400 rounded-lg md:hidden hover:bg-gray-100 dark:hover:bg-gray-800 transition duration-150" aria-controls="navbar-sticky" aria-expanded="false">
                     <span class="sr-only">Abrir menú</span>
                     <i class="ri-menu-line text-lg"></i>
                 </button>
@@ -99,8 +112,8 @@
                         <a href="{{ $item['route'] }}" 
                         class="block py-1.5 px-2.5 rounded-lg transition duration-150 
                         {{ $item['active'] 
-                            ? 'text-emerald-700 bg-emerald-50 md:bg-transparent font-bold' 
-                            : 'text-gray-600 hover:text-emerald-700 hover:bg-gray-50 md:hover:bg-transparent' 
+                            ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 md:bg-transparent font-bold'
+                            : 'text-gray-600 dark:text-gray-300 hover:text-emerald-700 dark:hover:text-emerald-400 hover:bg-gray-50 dark:hover:bg-gray-800 md:hover:bg-transparent'
                         }}">
                             {{ $item['name'] }}
                         </a>
@@ -108,8 +121,8 @@
                 @endforeach
 
                 @guest
-                    <li class="md:hidden space-y-1.5 mt-2 pt-2 border-t border-gray-100">
-                        <a href="{{ route('login') }}" class="block text-center py-2 px-3 text-gray-700 bg-gray-100 rounded-lg text-sm font-semibold">
+                    <li class="md:hidden space-y-1.5 mt-2 pt-2 border-t border-gray-100 dark:border-gray-800">
+                        <a href="{{ route('login') }}" class="block text-center py-2 px-3 text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-800 rounded-lg text-sm font-semibold">
                             Iniciar Sesión
                         </a>
                         <a href="{{ route('register') }}" class="block text-center py-2 px-3 text-white bg-emerald-600 rounded-lg text-sm font-semibold">

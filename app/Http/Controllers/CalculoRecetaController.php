@@ -14,6 +14,8 @@ class CalculoRecetaController extends Controller
 {
     public function store(Request $request, Receta $receta)
     {
+        $this->authorizeRecipe($receta);
+
         
         $request->validate([
         'mano_obra' => 'required|numeric|min:0',
@@ -213,6 +215,8 @@ class CalculoRecetaController extends Controller
             'ingredientes.ingrediente'
         ])->findOrFail($id);
 
+        $this->authorizeCalculation($recetaElaborada);
+
         $reportData = $this->buildReportData($recetaElaborada);
 
         return view(
@@ -223,6 +227,7 @@ class CalculoRecetaController extends Controller
 
     public function document(RecetaCalc $recetaElaborada)
     {
+        $this->authorizeCalculation($recetaElaborada);
         $recetaElaborada->load(['receta', 'ingredientes.ingrediente']);
 
         $reportData = $this->buildReportData($recetaElaborada);
@@ -237,6 +242,7 @@ class CalculoRecetaController extends Controller
 
     public function exportExcel(RecetaCalc $recetaElaborada)
     {
+        $this->authorizeCalculation($recetaElaborada);
         $recetaElaborada->load(['receta', 'ingredientes.ingrediente']);
 
         $filename = Str::slug($recetaElaborada->receta->nombre_receta ?? 'reporte')
@@ -286,6 +292,7 @@ class CalculoRecetaController extends Controller
 
     public function create(Receta $receta)
     {
+        $this->authorizeRecipe($receta);
         $receta->load('ingredientes');
 
         if ($receta->ingredientes->isEmpty()) {
@@ -300,10 +307,21 @@ class CalculoRecetaController extends Controller
     public function index()
     {
         $recetasElaboradas = RecetaCalc::with('receta')
+            ->where('id_usuario', auth()->id())
             ->latest('id_receta_elaborada')
             ->paginate(6);
 
         return view('recetas_elaboradas.index', compact('recetasElaboradas'));
+    }
+
+    private function authorizeRecipe(Receta $receta): void
+    {
+        abort_unless($receta->id_usuario === auth()->id(), 403);
+    }
+
+    private function authorizeCalculation(RecetaCalc $recetaElaborada): void
+    {
+        abort_unless($recetaElaborada->id_usuario === auth()->id(), 403);
     }
 
 }

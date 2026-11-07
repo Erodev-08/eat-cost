@@ -42,7 +42,8 @@ it('generates a pdf export for a recipe report', function () {
         'interpretacion' => 'Reporte de prueba',
     ]);
 
-    $response = $this->get(route('recetas.elaboradas.document', $recetaElaborada));
+    $response = $this->actingAs($user)
+        ->get(route('recetas.elaboradas.document', $recetaElaborada));
 
     $response->assertOk();
     $response->assertHeader('Content-Type', 'application/pdf');
@@ -86,7 +87,8 @@ it('generates an excel export with a formatted report layout', function () {
         'interpretacion' => 'Reporte de prueba',
     ]);
 
-    $response = $this->get(route('recetas.elaboradas.excel', $recetaElaborada));
+    $response = $this->actingAs($user)
+        ->get(route('recetas.elaboradas.excel', $recetaElaborada));
 
     $response->assertOk();
     $response->assertHeader('Content-Type', 'application/vnd.ms-excel; charset=UTF-8');
@@ -94,7 +96,8 @@ it('generates an excel export with a formatted report layout', function () {
     $response->assertSee('Resumen financiero');
     $response->assertSee('Detalle de ingredientes');
 
-    $previewResponse = $this->get(route('recetas.elaboradas.excel', $recetaElaborada) . '?preview=1');
+    $previewResponse = $this->actingAs($user)
+        ->get(route('recetas.elaboradas.excel', $recetaElaborada) . '?preview=1');
 
     $previewResponse->assertOk();
     $previewResponse->assertHeader('Content-Type', 'text/html; charset=UTF-8');

@@ -67,26 +67,6 @@ class RecetaController extends Controller
         return view('recetas.show', ['receta' => $receta]);
     }
 
-    public function calcular(Receta $receta) {
-        $receta->load('ingredientes');
-        // Aquí puedes agregar la lógica matemática para calcular los costos
-        return view('recetas.calcular', compact('receta'));
-    }
-
-    public function storeCalculo(Request $request, Receta $receta) 
-    {
-        // 1. Validar los datos del formulario enviados por POST
-        $validated = $request->validate([
-            // Agrega aquí las reglas de validación según los campos de tu formulario en calcular.blade.php
-        ]);
-
-        // 2. Aquí puedes procesar o guardar los datos del cálculo del costo
-
-        // 3. Redirigir de vuelta o a otra vista con un mensaje de éxito
-        return redirect()->route('recetas.show', $receta)
-                         ->with('status', 'success-calculo');
-    }
-
     public function edit(Receta $receta) {
         if ($receta->id_usuario !== auth()->id()) {
             abort(403, 'No tienes permiso para editar esta receta.');
@@ -199,15 +179,17 @@ class RecetaController extends Controller
                 $unidad = $ing['unidad_medida'] ?? null;
                 $presentacionUnidad = $unidad;
 
-                $ingrediente = Ingrediente::updateOrCreate(
-                    ['nombre' => $nombre],
-                    [
+                $ingrediente = Ingrediente::firstOrNew(['nombre' => $nombre]);
+
+                if (!$ingrediente->exists) {
+                    $ingrediente->fill([
                         'unidad_medida' => $unidad,
                         'presentacion_cantidad' => $ing['presentacion_cantidad'] ?? null,
                         'presentacion_unidad' => $presentacionUnidad,
                         'costo_presentacion' => $ing['costo_presentacion'] ?? null,
-                    ]
-                );
+                    ]);
+                    $ingrediente->save();
+                }
 
 
                 $syncData[$ingrediente->id_ingrediente] = [

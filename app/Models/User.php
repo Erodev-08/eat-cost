@@ -59,6 +59,11 @@ class User extends Authenticatable //implements MustVerifyEmail
     {
         return $this->hasOne(Profile::class, 'id_user', 'id_usuario');
     }
+
+    public function progresosAprendizaje(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ProgresoEstudiante::class, 'id_usuario', 'id_usuario');
+    }
     
     // Mutador para establecer fecha_registro automáticamente
     protected static function booted()

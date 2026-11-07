@@ -4,10 +4,89 @@
 
 @layer base {
     html {
-        font-size: 19px;
+        font-size: 16px;
+    }
+    html.dark {
+        color-scheme: dark;
     }
     body {
-        @apply text-base text-gray-800 antialiased;
+        @apply text-base text-gray-800 antialiased bg-gray-50 dark:bg-slate-900 dark:text-slate-100;
         letter-spacing: -0.01em;
     }
+}
+
+/* Global comfortable dark mode support across common white cards and surfaces */
+.dark body {
+    background-color: #0f172a; /* Slate 900: descanso visual agradable sin ser negro puro */
+    color: #f1f5f9;
+}
+
+.dark .bg-white {
+    background-color: #1e293b; /* Slate 800 para tarjetas y paneles */
+}
+
+.dark .bg-gray-50 {
+    background-color: #1a2234; /* Fondo alternado suave */
+}
+
+.dark .bg-gray-100 {
+    background-color: #334155;
+}
+
+.dark .border-gray-100,
+.dark .border-gray-200,
+.dark .border-gray-200\/80,
+.dark .border-gray-200\/90 {
+    border-color: #334155 !important; /* Bordes visibles y elegantes */
+}
+
+.dark .border-gray-300 {
+    border-color: #475569 !important;
+}
+
+.dark .text-gray-900 {
+    color: #f8fafc !important; /* Títulos y textos principales con alto contraste legible */
+}
+
+.dark .text-gray-800 {
+    color: #f1f5f9 !important;
+}
+
+.dark .text-gray-700 {
+    color: #e2e8f0 !important;
+}
+
+.dark .text-gray-600 {
+    color: #cbd5e1 !important; /* Subtítulos y descripciones descansadas */
+}
+
+.dark .text-gray-500 {
+    color: #94a3b8 !important;
+}
+
+.dark .text-gray-400 {
+    color: #94a3b8 !important;
+}
+
+.dark .shadow-xs,
+.dark .shadow-sm,
+.dark .shadow-md,
+.dark .shadow-lg,
+.dark .shadow-xl {
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.45);
+}
+
+.dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+.dark select,
+.dark textarea {
+    background-color: #0f172a !important;
+    border-color: #334155 !important;
+    color: #f8fafc !important;
+}
+
+.dark input:focus,
+.dark select:focus,
+.dark textarea:focus {
+    border-color: #10b981 !important;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25) !important;
 }
