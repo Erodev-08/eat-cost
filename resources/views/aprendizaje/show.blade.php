@@ -420,7 +420,7 @@
 
                     {{-- Botón a siguiente módulo --}}
                     @if ($siguienteLeccion)
-                        <div id="btn-siguiente-modulo" class="mt-4 hidden text-center">
+                        <div id="btn-siguiente-modulo" class="mt-4 {{ $encuesta ? '' : 'hidden' }} text-center">
                             <a href="{{ route('aprendizaje.show', $siguienteLeccion->slug) }}" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm shadow-sm transition-all">
                                 <span>Avanzar a: {{ $siguienteLeccion->titulo }}</span>
                                 <i class="ri-arrow-right-line"></i>
@@ -432,6 +432,44 @@
 
         </div>
 
+    </div>
+</div>
+
+{{-- ENCUESTA OBLIGATORIA AL COMPLETAR EL MÓDULO --}}
+<div id="modal-encuesta" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="encuesta-titulo">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-gray-100">
+        <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
+                <i class="ri-chat-smile-3-line"></i>
+            </div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-emerald-700">Tu opinión cuenta</p>
+                <h3 id="encuesta-titulo" class="text-lg font-bold text-gray-900">¿Qué te pareció este módulo?</h3>
+            </div>
+        </div>
+        <p class="text-sm text-gray-600 mb-5">Antes de continuar, califica tu experiencia de aprendizaje.</p>
+        <form id="form-encuesta" onsubmit="enviarEncuesta(event)" class="space-y-4">
+            @csrf
+            <fieldset>
+                <legend class="text-sm font-semibold text-gray-800 mb-2">Calificación <span class="text-red-500">*</span></legend>
+                <div class="flex items-center justify-between gap-2">
+                    @foreach ([1 => 'Muy mala', 2 => 'Mala', 3 => 'Regular', 4 => 'Buena', 5 => 'Excelente'] as $valor => $texto)
+                        <label class="flex flex-col items-center gap-1 text-[10px] text-gray-500 cursor-pointer">
+                            <input type="radio" name="calificacion" value="{{ $valor }}" required class="text-emerald-600 focus:ring-emerald-500">
+                            <span>{{ $valor }}</span>
+                            <span class="sr-only">{{ $texto }}</span>
+                        </label>
+                    @endforeach
+                </div>
+                <div class="flex justify-between text-[10px] text-gray-400 mt-1"><span>Muy mala</span><span>Excelente</span></div>
+            </fieldset>
+            <div>
+                <label for="comentario-encuesta" class="text-sm font-semibold text-gray-800">¿Qué podríamos mejorar? <span class="font-normal text-gray-400">(opcional)</span></label>
+                <textarea id="comentario-encuesta" name="comentario" rows="3" maxlength="1000" class="mt-2 w-full rounded-xl border-gray-200 text-sm focus:border-emerald-500 focus:ring-emerald-500" placeholder="Comparte tus comentarios"></textarea>
+            </div>
+            <p id="error-encuesta" class="hidden text-sm text-red-600"></p>
+            <button type="submit" id="btn-encuesta" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm transition-all">Enviar encuesta y continuar</button>
+        </form>
     </div>
 </div>
 
@@ -682,14 +720,7 @@
                 let btnSig = document.getElementById('btn-siguiente-modulo');
                 if (btnSig) btnSig.classList.remove('hidden');
 
-                if (window.Swal) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Módulo Aprobado',
-                        text: `Obtuviste ${data.puntaje}%. Desbloqueaste el siguiente nivel.`,
-                        confirmButtonColor: '#059669'
-                    });
-                }
+                abrirEncuesta();
             } else {
                 resDiv.className = 'mt-6 p-5 rounded-2xl border border-amber-200 bg-amber-50 text-amber-900 text-center';
                 resDiv.innerHTML = `
@@ -705,6 +736,60 @@
             alert('Ocurrió un error al enviar el quiz.');
         }
     }
+
+    function abrirEncuesta() {
+        const modal = document.getElementById('modal-encuesta');
+        if (modal) modal.classList.remove('hidden');
+    }
+
+    async function enviarEncuesta(e) {
+        e.preventDefault();
+        const form = document.getElementById('form-encuesta');
+        const btn = document.getElementById('btn-encuesta');
+        const error = document.getElementById('error-encuesta');
+        btn.disabled = true;
+        btn.innerText = 'Guardando...';
+        error.classList.add('hidden');
+
+        try {
+            const res = await fetch("{{ route('aprendizaje.encuesta', $leccion->slug) }}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                },
+                body: new FormData(form)
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                throw new Error(data.message || data.error || 'No se pudo guardar la encuesta.');
+            }
+
+            document.getElementById('modal-encuesta').classList.add('hidden');
+            const btnSig = document.getElementById('btn-siguiente-modulo');
+            if (btnSig) btnSig.classList.remove('hidden');
+            if (window.Swal) {
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Gracias!',
+                    text: data.mensaje,
+                    confirmButtonColor: '#059669'
+                });
+            }
+        } catch (error) {
+            error = error instanceof Error ? error.message : 'No se pudo guardar la encuesta.';
+            const errorElement = document.getElementById('error-encuesta');
+            errorElement.innerText = error;
+            errorElement.classList.remove('hidden');
+        } finally {
+            btn.disabled = false;
+            btn.innerText = 'Enviar encuesta y continuar';
+        }
+    }
+
+    @if ($progreso && $progreso->completado && !$encuesta)
+        document.addEventListener('DOMContentLoaded', abrirEncuesta);
+    @endif
 </script>
 @endpush
 @endsection

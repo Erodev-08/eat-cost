@@ -56,6 +56,8 @@ Route::middleware('auth')->group(function () {
         ->name('aprendizaje.show');
     Route::post('/aprendizaje/{slug}/evaluar', [\App\Http\Controllers\AprendizajeController::class, 'evaluarQuiz'])
         ->name('aprendizaje.evaluar');
+    Route::post('/aprendizaje/{slug}/encuesta', [\App\Http\Controllers\AprendizajeController::class, 'guardarEncuesta'])
+        ->name('aprendizaje.encuesta');
     Route::post('/aprendizaje/{slug}/reintentar', [\App\Http\Controllers\AprendizajeController::class, 'reintentarQuiz'])
         ->name('aprendizaje.reintentar');
 
@@ -69,21 +71,27 @@ Route::middleware('auth')->group(function () {
 Route::get('/receta/{receta}', [RecetaController::class, 'show'])->name('recetas.show');
 Route::get('/receta', [RecetaController::class, 'index'])->name('recetas');
 Route::get('/recetas/{receta}/calcular', [CalculoRecetaController::class, 'create'])
+    ->middleware('auth')
     ->name('recetas.calcular');
 
 Route::post('/recetas/{receta}/calcular', [CalculoRecetaController::class, 'store'])
+    ->middleware('auth')
     ->name('recetas.calcular.store');
 
 Route::get('/mis-recetas-elaboradas', [CalculoRecetaController::class, 'index'])
+    ->middleware('auth')
     ->name('recetas.elaboradas.index');
 
 Route::get('/mis-recetas-elaboradas/{recetaElaborada}', [CalculoRecetaController::class, 'show'])
+    ->middleware('auth')
     ->name('recetas.elaboradas.show');
 
 Route::get('/mis-recetas-elaboradas/{recetaElaborada}/documento', [CalculoRecetaController::class, 'document'])
+    ->middleware('auth')
     ->name('recetas.elaboradas.document');
 
 Route::get('/mis-recetas-elaboradas/{recetaElaborada}/excel', [CalculoRecetaController::class, 'exportExcel'])
+    ->middleware('auth')
     ->name('recetas.elaboradas.excel');
 
 Route::get('/google-auth/redirect', [

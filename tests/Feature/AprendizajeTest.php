@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\ConceptoFinanciero;
+use App\Models\EncuestaModulo;
 use App\Models\ProgresoEstudiante;
 use App\Models\User;
 
@@ -78,4 +79,51 @@ it('does not expose correct answers when evaluating a lesson', function () {
 
     $response->assertOk()
         ->assertJsonMissingPath('retroalimentacion.0.respuesta_correcta');
+});
+
+it('requires a completed lesson before accepting its survey', function () {
+    $user = User::factory()->create();
+    $leccion = ConceptoFinanciero::create([
+        'slug' => 'leccion-encuesta',
+        'titulo' => 'Lección con encuesta',
+        'descripcion' => 'Contenido de prueba',
+        'orden' => 1,
+        'quiz' => ['preguntas' => [['id' => 'p1', 'respuesta_correcta' => 0, 'opciones' => ['Sí']]]],
+    ]);
+
+    $response = $this->actingAs($user)->postJson(
+        route('aprendizaje.encuesta', $leccion->slug),
+        ['calificacion' => 5]
+    );
+
+    $response->assertUnprocessable();
+    expect(EncuestaModulo::count())->toBe(0);
+});
+
+it('saves the required survey after completing a lesson', function () {
+    $user = User::factory()->create();
+    $leccion = ConceptoFinanciero::create([
+        'slug' => 'leccion-encuesta-completa',
+        'titulo' => 'Lección completada',
+        'descripcion' => 'Contenido de prueba',
+        'orden' => 1,
+    ]);
+    ProgresoEstudiante::create([
+        'id_usuario' => $user->getKey(),
+        'id_concepto' => $leccion->id_concepto,
+        'completado' => true,
+    ]);
+
+    $response = $this->actingAs($user)->postJson(
+        route('aprendizaje.encuesta', $leccion->slug),
+        ['calificacion' => 4, 'comentario' => 'Muy claro']
+    );
+
+    $response->assertOk()->assertJson(['success' => true]);
+    $this->assertDatabaseHas('encuestas_modulos', [
+        'id_usuario' => $user->getKey(),
+        'id_concepto' => $leccion->id_concepto,
+        'calificacion' => 4,
+        'comentario' => 'Muy claro',
+    ]);
 });

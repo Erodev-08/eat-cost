@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ConceptoFinanciero;
+use App\Models\EncuestaModulo;
 use App\Models\ProgresoEstudiante;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -123,8 +124,47 @@ class AprendizajeController extends Controller
 
         // Respuestas previamente guardadas por el estudiante si las hay
         $respuestasGuardadas = $progreso->respuestas_usuario ?? [];
+        $encuesta = EncuestaModulo::where('id_usuario', $userId)
+            ->where('id_concepto', $leccion->id_concepto)
+            ->first();
 
-        return view('aprendizaje.show', compact('leccion', 'progreso', 'siguienteLeccion', 'anteriorLeccion', 'preguntasAleatorias', 'respuestasGuardadas'));
+        return view('aprendizaje.show', compact('leccion', 'progreso', 'siguienteLeccion', 'anteriorLeccion', 'preguntasAleatorias', 'respuestasGuardadas', 'encuesta'));
+    }
+
+    /**
+     * Guarda la opinión obligatoria del estudiante al completar un módulo.
+     */
+    public function guardarEncuesta(Request $request, $slug)
+    {
+        $userId = Auth::id();
+        $leccion = ConceptoFinanciero::where('slug', $slug)->firstOrFail();
+        $progreso = ProgresoEstudiante::where('id_usuario', $userId)
+            ->where('id_concepto', $leccion->id_concepto)
+            ->first();
+
+        if (!$progreso?->completado) {
+            return response()->json([
+                'error' => 'Debes aprobar el módulo antes de contestar la encuesta.',
+            ], 422);
+        }
+
+        $datos = $request->validate([
+            'calificacion' => ['required', 'integer', 'between:1,5'],
+            'comentario' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        EncuestaModulo::updateOrCreate(
+            [
+                'id_usuario' => $userId,
+                'id_concepto' => $leccion->id_concepto,
+            ],
+            $datos
+        );
+
+        return response()->json([
+            'success' => true,
+            'mensaje' => 'Gracias por compartir tu opinión.',
+        ]);
     }
 
     /**
